@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  from_id: 1
+  from_desig: MyString
+  to_id: 1
+  to_desig: MyString
+  message: MyString
+
+two:
+  from_id: 1
+  from_desig: MyString
+  to_id: 1
+  to_desig: MyString
+  message: MyString

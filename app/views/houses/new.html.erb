@@ -1,0 +1,11 @@
+<p style="color: red"><%= notice %></p>
+
+<h1>New house</h1>
+
+<%= render "houses/form", house: @house %>
+
+<br>
+
+<div>
+  <%= link_to "Back", owner_path(session[:user]) %>
+</div>

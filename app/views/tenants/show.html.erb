@@ -1,0 +1,28 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @tenant %>
+
+<%= button_to "Logout", logout_path, :method => "delete" , data: { turbo_confirm: "Are you sure?" } , class: "btn btn-small btn-success" %>
+
+<% if session[:desig] == "Owner" %>
+<div>
+  <%= link_to "Back to house", houses_path %>
+  <%= link_to "Ask for Rent", new_message_path(desig:"tenant",to_id:@tenant ), method: :get %>
+</div>
+<% elsif session[:desig] == "Tenant" %>
+  <%= link_to "Edit profile" %>
+  <%= link_to "View house", house_path(@tenant.house_id) %>
+  
+  <%= button_to "Profile", messages_path(type: 'emergency'), method: :post %>
+<% end %>
+
+<% if session[:desig] == "Tenant" %>
+<h1>Messages</h1>
+
+<div id="messages">
+  <% @messages.each do |message| %>
+    <%= render message %>
+    
+  <% end %>
+</div>
+<% end %>

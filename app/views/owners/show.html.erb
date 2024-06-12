@@ -1,0 +1,24 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @owner %>
+
+<div>
+  <%= link_to "Edit this owner", edit_owner_path(@owner) , class: "btn btn-small btn-success my-2" %> 
+  <%= link_to "Add house", new_house_path, class: "btn btn-small btn-success my-2" %>
+  
+</div>
+
+<h1>Houses</h1>
+<div>
+  <% @c=0 %>
+  <% @houses.each_with_index do |house, index| %>
+    <div>
+      <% if house.owner_id == session[:user] %>
+        <%= render house %>
+        
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+

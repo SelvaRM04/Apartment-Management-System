@@ -1,0 +1,18 @@
+<% if session[:desig] == "Owner" %>
+  <h1 style="position:fixed;top:200px;left:200px">Rent<%= image_tag("rent.png") %></h1>
+<% elsif session[:desig] == "Security" %>
+  <h1 style="position:fixed;top:200px;left:200px">Approval<%= image_tag("approval.png", size:"260x260") %></h1>
+<% elsif session[:desig] == "Tenant" %>
+  <h1 style="position:fixed;top:200px;left:200px">Message<%= image_tag("message.png", size:"260x260") %></h1>
+<% end %>
+<%= render "form", message: @message %>
+
+<br>
+
+<% if session[:desig] == "Owner" || session[:desig] == "Security" || session[:desig] == "Tenant" %>
+
+
+<div style="margin-left:890px">
+    <strong><%= link_to "Back", root_path, class:"btn btn-primary" %></strong>
+  </div>
+<% end %>

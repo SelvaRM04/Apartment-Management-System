@@ -1,0 +1,42 @@
+<% if params[:desig] == "owner" %>
+  <body style="background-color: rgb(242,180,7)">
+<% elsif params[:desig] == "tenant" %>
+  <body class="bg-success">
+<% elsif params[:desig] == "security" %>
+  <body class="bg-primary">
+<% elsif params[:desig] == "admin" %>
+  <body class="bg-danger">
+<% end %>
+
+<% if notice!=nil %><p style="color: white;background-color:red;width:50%;padding:3px"><%= notice %></p>
+<% end %>
+
+<h1 style="position:fixed;top:230px;left:233px">Login
+  <% if @desig == "owner" %>
+    <%= image_tag("owner.png") %>
+  <% elsif @desig == "tenant" %>
+    <%= image_tag("tenant.png") %>
+  <% elsif @desig == "admin" %>
+    <%= image_tag("admin.png") %>
+  <% else %>
+    <%= image_tag("security.png") %>
+  <% end %>
+</h1>
+
+<%= render "form", owner: @owner %>
+
+<br>
+
+<div style="margin-left:780px">
+  <strong>Don&#8217;t have an account ? </strong>
+  <% if @desig == "owner" %>
+    <strong><%= link_to "Sign up", new_owner_path, class:"btn btn-primary" %></strong>
+  <% elsif @desig == "tenant" %>
+    <strong><%= link_to "Sign up", new_tenant_path, class:"btn btn-dark" %></strong>
+  <% elsif @desig == "security" %>
+    <strong><%= link_to "Sign up", new_security_path, class:"btn btn-dark" %></strong>
+    <% elsif @desig == "admin" %>
+    <strong><%= link_to "Sign up", new_admin_path, class:"btn btn-dark" %></strong>
+  <% end %>
+</div>
+</body>

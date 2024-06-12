@@ -1,0 +1,23 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Houses</h1>
+
+<div id="houses">
+  <% @c=0 %>
+  <% @houses.each_with_index do |house, index| %>
+    <% if house.owner_id == session[:user] %>
+      <h2><strong>House <%= @c+=1 %></strong></h2>
+      <%= render house %>
+      <p>
+        <% if house.tenant!=nil %>
+        <%= link_to "View tenant", tenant_path(house.tenant) %>
+        <% end %>
+      </p>
+    <% elsif house.tenant && house.tenant.id == session[:user] %>
+      <%= render house %>
+    <% end %>
+  <% end %>
+</div>
+
+<%= link_to "New house", new_house_path %>
+<%= link_to "Back", owner_path(session[:user]) %>

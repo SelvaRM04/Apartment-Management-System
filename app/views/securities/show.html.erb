@@ -1,0 +1,21 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @security %>
+
+<div>
+  <%= button_to "Logout", logout_path, :method => "delete" , data: { turbo_confirm: "Are you sure?" } , class: "btn btn-small btn-primary" %>
+</div>
+
+
+<h1>Houses</h1>
+<div>
+  <% @c=0 %>
+  <% @houses.each_with_index do |house, index| %>
+    <div>
+      
+        <%= render house %>
+        
+      
+    </div>
+  <% end %>
+</div>

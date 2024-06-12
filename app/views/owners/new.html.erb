@@ -1,0 +1,11 @@
+<body style="background-color: rgb(242,180,7);">
+<% if notice!=nil %><p style="color: white;background-color:red;width:50%;padding:3px"><%= notice %></p>
+<% end %>
+<h1 style="position:fixed;top:200px;left:200px">Sign up<%= image_tag("owner.png") %></h1>
+<%= render "form", owner: @owner %>
+<br>
+
+  <div style="margin-left:780px">
+    <strong>Already have an account ? <%= link_to "Log in", login_path("owner"), class:"btn btn-primary" %></strong>
+  </div>
+</body>

@@ -1,0 +1,59 @@
+<div id="<%= dom_id message %>">
+
+  <p class:"border border-primary">
+    <strong>Date:</strong>
+    <%= (message.created_at + 5*60*60 + 30*60).to_time.strftime('%B %e at %l:%M %p') %>
+    <%= time_ago_in_words(message.created_at) %> ago
+  </p>
+
+  <p>
+  <% if session[:desig] == "Owner" %>
+    <% if message.from_desig == "Owner" %>
+      <strong>To:</strong>
+      <%= Tenant.find(message.to_id).name+" ( Tenant )" %>
+    <% elsif message.to_desig == "owner" %>
+      <strong>From:</strong>
+      <%= Tenant.find(message.from_id).name+" ( Tenant )"  %>
+    <% end %>
+  <% elsif session[:desig] == "Tenant" %>
+    <% if message.to_desig == "owner" %>
+      <strong>To:</strong>
+      <%= Owner.find(message.to_id).name+" ( Owner )"  %>
+    <% elsif message.from_desig == "Owner" %>
+      <strong>From:</strong>
+      <%= Owner.find(message.from_id).name+" ( Owner )"  %>
+    <% elsif message.to_desig == "tenant" && message.from_desig == "security" %>
+      <strong>From:</strong>
+      <%= Security.find(message.from_id).name+" ( Security )"  %>
+
+      <strong>Address:</strong>
+      <%= Tenant.find(message.from_id).house_id+" ( Neighbour )"  %>
+    <% elsif message.to_desig == "security" %>
+      <strong>From:</strong>
+      <%= Security.find(message.to_id).name+" ( Security )"  %>
+    <% end %>
+  <% end %>
+  </p>
+
+  <% if @image_show %>
+    <p>
+      <strong>House Name:</strong>
+      <%= @house_name %>
+    </p>
+  <% end %>
+  <p class:"btn btn-success" >
+    <strong>Message:</strong>
+    <%= message.message %>
+  </p>
+
+  
+  <div>
+    <% if message.image.attached? && @image_show %>
+      <%= image_tag  message.image, style: "width: 200px;display: block" %>
+      <% else %>
+    <% end %>
+  </div>
+
+  
+
+</div>

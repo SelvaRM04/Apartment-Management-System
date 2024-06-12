@@ -1,0 +1,36 @@
+<body class="bg-danger">
+<%= form_with(model: admin) do |form| %>
+  <% if admin.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(admin.errors.count, "error") %> prohibited this admin from being saved:</h2>
+
+      <ul>
+        <% admin.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="text-center border border-warning align-items-center border border-dark", style=" width :400px ;background-color: rgb(255, 212, 213); margin-left:720px;margin-top:50px;padding-left:35px;padding:20px; position:relative">
+  <div class="form-group my-5">
+        <strong><%= form.label :name, style: "display: block" , class:"control-label mb-2 col-sm-2" %></strong>
+        <%= form.text_field :name, placeholder: "Enter your name", class:"form-control w-75 mb-2 border border-dark", :required => true %>
+  </div>
+
+  <div class="form-group my-5">
+    <strong><%= form.label :email, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>
+    <%= form.text_field :email, placeholder: "Enter your email", class:"form-control w-75 mb-2 border border-dark" %>
+  </div>
+
+  <div class="form-group my-5">
+    <strong><%= form.label :password, style: "display: block" , class:"control-label col-sm-2 p-2" %></strong>
+    <%= form.password_field :password, placeholder: "Choose a password", class:"form-control w-75 mb-2 border border-dark" %>
+  </div>
+
+  <div>
+    <%= form.submit "Sign up", class:"btn btn-danger border border-dark" %>
+  </div>
+  </div>
+<% end %>
+</body>

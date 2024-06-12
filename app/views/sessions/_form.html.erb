@@ -1,0 +1,47 @@
+<%= form_with(scope: :session, url: login_create_path(@desig), method: :post) do |form| %>
+    <% if @user.errors.any? %>
+      <div style="color: red">
+        <h2><%= pluralize(@user.errors.count, "error") %> prohibited this owner from being saved:</h2>
+  
+        <ul>
+          <% @user.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  
+    <% if params[:desig] == "owner" %>
+      <div class="text-center border border-warning align-items-center border border-dark", style="width :400px ;background-color: rgb(255,244,120); margin-left:720px;margin-top:100px;padding-left:50px;padding:30px">
+    <% elsif params[:desig] == "tenant" %>
+      <div class="text-center border border-warning align-items-center border border-dark", style="width :400px ;background-color: rgb(200, 252, 151); margin-left:720px;margin-top:100px;padding-left:50px;padding:30px">
+    <% elsif params[:desig] == "security" %>
+      <div class="text-center border border-warning align-items-center border border-dark", style="width :400px ;background-color: rgb(212, 227, 255); margin-left:720px;margin-top:100px;padding-left:50px;padding:30px">
+      <% elsif params[:desig] == "admin" %>
+      <div class="text-center border border-warning align-items-center border border-dark", style="width :400px ;background-color: rgb(255, 212, 213); margin-left:720px;margin-top:100px;padding-left:50px;padding:30px">
+    <% end %>
+    
+    <div class="form-group my-5">
+      <strong><%= form.label :email, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>
+      <%= form.text_field :email, placeholder: "Enter your email" , class:"form-control w-75 mb-2 border border-dark" %>
+    </div>
+
+    <div class="form-group my-5">
+    <strong><%= form.label :password, style: "display: block", class:"control-label col-sm-2 p-2" %></strong>
+      <%= form.password_field :password, placeholder: "Enter your password" , class:"form-control w-75 mb-2 border border-dark" %>
+    </div>
+  
+    <% if params[:desig] == "owner" %>
+    <div>
+      <%= form.submit "Login", class:"btn btn-warning border border-dark" %>
+    </div>
+    <% elsif params[:desig] == "tenant" %>
+      <%= form.submit "Login", class:"btn btn-success border border-dark" %>
+    <% elsif params[:desig] == "security" %>
+      <%= form.submit "Login", class:"btn btn-primary border border-dark" %>
+    <% elsif params[:desig] == "admin" %>
+      <%= form.submit "Login", class:"btn btn-primary border border-dark" %>
+    <% end %>
+  <% end %>
+  </div>
+  
