@@ -1,24 +1,50 @@
-<p style="color: green"><%= notice %></p>
-
-<%= render @owner %>
-
-<div>
-  <%= link_to "Edit this owner", edit_owner_path(@owner) , class: "btn btn-small btn-success my-2" %> 
-  <%= link_to "Add house", new_house_path, class: "btn btn-small btn-success my-2" %>
+<body class="bg-warning">
   
-</div>
-
-<h1>Houses</h1>
-<div>
-  <% @c=0 %>
-  <% @houses.each_with_index do |house, index| %>
-    <div>
-      <% if house.owner_id == session[:user] %>
-        <%= render house %>
-        
-      <% end %>
-    </div>
+  <% if notice!=nil %>
+    <center>
+      <p style="background-color: rgb(15, 247, 131); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(0,100,0); color: rgb(0,100,0)">
+        <%= notice %>
+        <a href="" >
+          <i style="position:absolute; top:10px;right:10px;color:rgb(0,100,0)" class="fa fa-close "></i>
+        </a>
+      </p>
+    </center>
   <% end %>
-</div>
 
+  <% if alert!=nil %>
+    <center>
+      <p style="background-color: rgb(247, 198, 198); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(168, 25, 25); color: rgb(168, 25, 25)">
+        <%= alert %>
+        <a href="" >
+          <i style="position:absolute; top:10px;right:10px; color:rgb(168, 25, 25)" class="fa fa-close "></i>
+        </a>
+      </p>
+    </center>
+  <% end %>
+  <br>
+
+  <%= render @owner %>
+  
+  <br>
+  <br>
+
+  <h1 class="text-center">Houses <% if @houses.length > 0 %>( <%= @houses.length %> )<% end %></h1>
+    <% if @houses.length == 0 %>
+      <div class="border border-dark p-5 w-50 h-100 m-auto " style="background-color:rgb(255,244,120)">
+        <p class="text-center fs-2">No houses :(</p>
+        <div class="text-center" >
+          <%= link_to "Add house", new_house_path, class: "btn btn-small btn-dark m-auto" %>
+        </div>
+      </div>
+    
+    <% else %>
+      <% @c=0 %>
+      <% @houses.each_with_index do |house, index| %>
+        <div>
+          <%= render house %> 
+        </div>
+      <% end %>
+    <% end %>
+
+</body>
 

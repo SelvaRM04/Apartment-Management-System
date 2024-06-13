@@ -2,7 +2,7 @@
 <%= form_with(model: tenant,url: "/tenants", method: :post) do |form| %>
   
   <%= javascript_include_tag "application" %>
-  <div class="text-center border border-warning align-items-center border border-dark", style=" width :400px ;background-color: rgb(255,244,120); margin-left:720px;margin-top:50px;padding-left:35px;padding:20px; position:relative">
+  <div class="text-center border border-warning align-items-center border border-dark", style=" width :400px ;background-color: rgb(200, 252, 151); margin-left:720px;margin-top:50px;padding-left:35px;padding:20px; position:relative">
   <div class="form-group my-3">
     <strong><%= form.label :name, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>
     <%= form.text_field :name, placeholder: "Enter a name" , class:"form-control w-75 border border-dark" %>
@@ -13,18 +13,46 @@
     <%= form.text_field :email, placeholder: "Enter an email" , class:"form-control w-75 mb-2 border border-dark" %>
   </div>
 
-  <div class="form-group my-3">
-    <strong><%= form.label :password, style: "display: block"  , class:"control-label col-sm-2 p-2" %></strong>
-    <%= form.password_field :password, placeholder: "Choose a password", class:"form-control w-75 mb-2 border border-dark" %>
+  <div class="form-group mt-4 mb-3">
+    <strong><%= form.label :password, style: "display: block" , class:"control-label col-sm-2 p-2" %></strong>
+    <% if !logged_in? %>
+      <%= form.password_field :password, placeholder: "Choose a password", class:"form-control w-75 mb-2 border border-dark", :required => true %>
+    <% else %>
+      <%= form.password_field :password, placeholder: "Enter old password", class:"form-control w-75 mb-2 border border-dark" %>
+    <% end %>
   </div>
 
-  
-  <%= form.collection_select :apartment, Apartment.order(:name),:id,:name, include_blank: true %>
-  <%= form.collection_select :block, Block.group(:name),:name,:name, include_blank: true %>
-  <%= form.collection_select :doorno, House.group(:doorno).select(:doorno),:doorno,:doorno, include_blank: true %>
+  <% if logged_in? %>
+    <div class="form-group mt-4 mb-3">
+      <strong><%= form.label "NewPassword", style: "display: block" , class:"control-label col-sm-2 p-2" %></strong>
+      <%= form.password_field :new_password, placeholder: "Choose a new password", class:"form-control w-75 mb-2 border border-dark" %>
+    </div>
+  <% end %>
 
+  <% if !logged_in? %>
+    <div class="form-group my-3">
+      <strong><%= form.label :apartment, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>       
+      <%= form.select :apartment, Apartment.all.collect { |p| [ p.name, p.id ] },{:prompt => 'Select Apartment'}, class: "form-control w-100 mb-2 border border-dark" %>
+    </div>
+
+    <div class="form-group my-3">
+      <strong><%= form.label :block, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>       
+      <%= form.select :block, Block.group(:name).collect { |p| [ p.name, p.name ] },{:prompt => 'Select Block'}, class: "form-control w-100 mb-2 border border-dark" %>
+    </div>
+
+    <div class="form-group my-3">
+      <strong><%= form.label :doorno, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>       
+      <%= form.select :doorno, House.group(:doorno).collect { |p| [ p.doorno, p.doorno ] },{:prompt => 'Select Doorno'}, class: "form-control w-100 mb-2 border border-dark" %>
+    </div>
+  <% end %>
+
+ 
   <div>
-    <%= form.submit "Sign up"%>
+    <% if !logged_in? %>
+      <%= form.submit "Sign up", class:"btn btn-success border border-dark" %>
+    <% else %>
+      <%= form.submit "Edit", class:"btn btn-success border border-dark" %>
+    <% end %>
   </div>
 
 

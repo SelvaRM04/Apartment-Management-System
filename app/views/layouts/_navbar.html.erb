@@ -1,0 +1,81 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark " >
+  <% if session[:desig] == "Owner" %>
+    <strong>
+      <%= link_to "AMS", root_path, class:"navbar-brand fs-1 text-warning", style:"margin-left:40px"%>
+    </strong>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse d-flex w-100 text-center align-items-center d-flex w-100 text-center justify-content-between" id="navbarNav">
+      <ul class="w-50 my-auto">
+        <div class="navbar-nav w-100 mb-lg-0 align-items-center list-inline-item justify-content-evenly">
+          <li class="nav-item list-inline-item">
+            <%= link_to "Home", "/home" , class: "btn btn-small btn-dark my-2 text-warning border border-warning" %> 
+          </li>
+          <li class="nav-item list-inline-item">
+            <%= link_to "Edit profile", "/edit" , class: "btn btn-small btn-dark my-2 text-warning border border-warning" %> 
+          </li>
+          <li class="nav-item list-inline-item">
+            <%= link_to "Add house", new_house_path, class: "btn btn-small btn-dark my-2 text-warning border border-warning" %>
+          </li>
+      </div>
+    </ul>
+    <li class="nav-item list-inline-item">
+      <%= button_to "Logout", logout_path, :method => "delete" , data: { turbo_confirm: "Are you sure?" }, class:"btn btn-warning my-2", style:"margin-right:40px" %>
+    </li>
+    </div>
+
+  <% elsif session[:desig] == "Tenant" %>
+    <strong>
+      <%= link_to "AMS", root_path, class:"navbar-brand fs-1", style:"margin-left:40px; color:rgb(122, 194, 64)"%>
+    </strong>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse d-flex w-100 text-center align-items-center d-flex w-100 text-center justify-content-between" id="navbarNav">
+      <ul class="w-50 my-auto">
+        <div class="navbar-nav w-50 mb-lg-0 align-items-center list-inline-item justify-content-evenly">
+          <li class="nav-item list-inline-item">
+            <%= link_to "Home", "/home" , class: "btn btn-small btn-dark my-2" ,style: "color: rgb(122, 194, 64); border: 1px solid rgb(122, 194, 64)" %> 
+          </li>
+          <li class="nav-item list-inline-item">
+            <%= link_to "Edit profile", "/edit" , class: "btn btn-small btn-dark my-2" ,style: "color: rgb(122, 194, 64); border: 1px solid rgb(122, 194, 64)" %> 
+          </li>
+        </div>
+      </ul>
+      <li class="nav-item list-inline-item">
+        <%= button_to "Logout", logout_path, :method => "delete" , data: { turbo_confirm: "Are you sure?" }, class:"btn my-2", style:"margin-right:40px;background-color: rgb(122, 194, 64)" %>
+      </li>
+    </div>
+
+  <% elsif session[:desig] == "Security" %>
+    <strong>
+      <%= link_to "AMS", root_path, class:"navbar-brand fs-1 text-info", style:"margin-left:40px; color:rgb(122, 194, 64)"%>
+    </strong>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse d-flex w-100 text-center align-items-center d-flex w-100 text-center justify-content-between" id="navbarNav">
+      <ul class="w-50 my-auto">
+        <div class="navbar-nav w-50 mb-lg-0 align-items-center list-inline-item justify-content-evenly">
+          <li class="nav-item list-inline-item">
+            <%= link_to "Home", "/home" , class: "btn btn-small btn-dark my-2 text-info border border-info" %> 
+          </li>
+          <li class="nav-item list-inline-item">
+            <%= link_to "Edit profile", "/edit" , class: "btn btn-small btn-dark my-2 text-info border border-info" %> 
+          </li>
+        </div>
+      </ul>
+      <li class="nav-item list-inline-item">
+        <%= button_to "Logout", logout_path, :method => "delete" , data: { turbo_confirm: "Are you sure?" }, class:"btn my-2 bg-info border border-info", style:"margin-right:40px" %>
+      </li>
+    </div>
+  <% else %>
+    <strong>
+      <%= link_to "AMS", root_path, class:"navbar-brand fs-1", style:"margin-left:40px;"%>
+    </strong>
+  <% end %>
+  
+
+
+</nav>

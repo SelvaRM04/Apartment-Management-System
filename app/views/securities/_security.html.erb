@@ -1,7 +1,12 @@
 <div id="<%= dom_id security %>">
+<div id="houses" class="my-5" style="border: 1px solid black;padding-left:30px;margin-left:30px;margin-right:30px;background-color: rgb(255,244,120);padding:50px;">
   <p>
-    <strong>Name:</strong>
-    <%= security.name %>
+    <% if security.name != nil %>
+      <strong>Name:</strong>
+      <%= security.name %>
+    <% else %>
+      Not yet signed up
+    <% end %>
   </p>
 
   <p>
@@ -9,4 +14,10 @@
     <%= security.email %>
   </p>
 
+  <p>
+    <strong>Apartment:</strong>
+    <%= Apartment.find(security.apartment_id).name%>
+  </p>
+
+</div>
 </div>

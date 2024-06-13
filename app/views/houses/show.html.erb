@@ -1,15 +1,34 @@
-<p style="color: green"><%= notice %></p>
+<% if notice!=nil %>
+    <center>
+      <p style="background-color: rgb(15, 247, 131); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(0,100,0); color: rgb(0,100,0)">
+        <%= notice %>
+        <a href="" >
+          <i style="position:absolute; top:10px;right:10px;color:rgb(0,100,0)" class="fa fa-close "></i>
+        </a>
+      </p>
+    </center>
+  <% end %>
 
-
-
-
+  <% if alert!=nil %>
+    <center>
+      <p style="background-color: rgb(247, 198, 198); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(168, 25, 25); color: rgb(168, 25, 25)">
+        <%= alert %>
+        <a href="" >
+          <i style="position:absolute; top:10px;right:10px; color:rgb(168, 25, 25)" class="fa fa-close "></i>
+        </a>
+      </p>
+    </center>
+  <% end %>
+  <br>
 <div>
 <% @messages_unread_count = 0 %>
 <% @apartment = Block.find(@house.block_id).apartment_id %>
-    <% @messages.each do |msg| %>
-      <% if msg.status == false and msg.to_id==session[:user] %>
-      <% debugger %>
-        <% @messages_unread_count += 1 %>
+    <% if @messages %>
+      <% @messages.each do |msg| %>
+        <% if msg.status == false and msg.to_id==session[:user] %>
+        <% # debugger %>
+          <% @messages_unread_count += 1 %>
+        <% end %>
       <% end %>
     <% end %>
 <% if @messages_unread_count > 0 %>
@@ -32,10 +51,12 @@
   <%= @house.doorno %>
 </p>
 
-<p>
-  <strong>Owner:</strong>
-  <%= Owner.find(@house.owner_id).name %>
-</p>
+<% if session[:desig] != "Owner" %>
+  <p>
+    <strong>Owner:</strong>
+    <%= Owner.find(@house.owner_id).name %>
+  </p>
+<% end %>
 
 <p>
   <strong>Tenant :</strong>
@@ -70,38 +91,63 @@
 <h1>Messages</h1><%= @messages_unread_count.to_s+" new messages" if @messages_unread_count > 0 %>
 
 <div id="messages">
-  <% @messages.each do |message| %>
-    <% if message.status == true || message.from_desig == session[:desig] %>
-      <div class="bg-warning">
-    <% else %>
-      <div style="background-color: rgb(133, 190, 237)">
+  <% if !@messages or @messages.length == 0 %>
+    <div class="border border-dark p-5 w-50 h-100 m-auto " style="background-color:rgb(255,244,120)">
+      <p class="text-center fs-2">No Messages :(</p>
+    </div>
+    <br>
+  <% else %>
+    <% messages = [] %>
+    <% @messages.each do |message| %>
+      <% if message.status == false && message.from_desig != session[:desig] %>
+        <% messages << message %>
+      <% end %>
+    <% end %>
+
+    <% @messages.each do |message| %>
+      <% if !(message.status == false && message.from_desig != session[:desig] )%>
+        <% messages << message %>
+      <% end %>
+    <% end %>
+
+    <% messages.each do |message| %>
+      <% if message.status == true || message.from_desig == session[:desig] %>
+        <div class="bg-warning">
+      <% else %>
+        <div style="background-color: rgb(133, 190, 237)">
       <% end %>
 
-      <%= render message %>
-      
-      <p>
-      <% if session[:desig] == "Tenant" && message.message_type=="approval" %>
-        <% if message.status == false %>
-          <%= button_to "Approve", approve_path, method: :post, params: {message_id: message.id, house_id: @house} %>
-        <% else %>
-          <%= button_to "Approved", :disabled => true %>
-        <% end %>
-      <% elsif session[:desig] == "Security" && message.message_type=="approval" %>
-        <% if message.status == false %>
-          <%= link_to "Waiting for approval", class:"btn btn-success" %>
-        <% else %>
-          <%= button_to "Approved", :disabled => true %>
-        <% end %>
-      <% elsif session[:desig] == "Security" && message.message_type == "emergency" %>
-        <% if message.status == false %>  
-          <%= button_to "Mark as read", approve_path, method: :post, params: {message_id: message.id, house_id: @house} %>
-        <% else %>
-          <%= button_to "Approved", :disabled => true %>
-        <% end %>
-      <% elsif message.message_type != "emergency" %>
-        <%= link_to "Show this message", message, class:"btn btn-success" %>
-      <% end %>
-      </p>
-    </div>
+        <%= render message %>
+        
+        <p>
+          <% if session[:desig] == "Tenant" && message.message_type=="approval" %>
+            <% if message.status == false %>
+              <%= button_to "Approve", approve_path, method: :post, params: {message_id: message.id, house_id: @house} %>
+            <% else %>
+              <%= button_to "Approved", :disabled => true %>
+            <% end %>
+          <% elsif session[:desig] == "Security" && message.message_type=="approval" %>
+            <% if message.status == false %>
+              <%= link_to "Waiting for approval", class:"btn btn-success" %>
+            <% else %>
+              <%= button_to "Approved", :disabled => true %>
+            <% end %>
+          <% elsif session[:desig] == "Security" && message.message_type == "emergency" %>
+            <% if message.status == false %>  
+              <%= button_to "Mark as read", approve_path, method: :post, params: {message_id: message.id, house_id: @house} %>
+            <% end %>
+          <% elsif message.message_type != "emergency" %>
+            <%= link_to "Show this message", message, class:"btn btn-success" %>
+          <% end %>
+          <% if message.from_desig == session[:desig] %>
+            <% if message.status == true %>
+              Read &#10004;
+            <% else %>
+              Received &#10003;
+            <% end %>
+          <% end %>
+        </p>
+      </div>
+    <% end %>
   <% end %>
 </div>

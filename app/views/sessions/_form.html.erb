@@ -23,12 +23,12 @@
     
     <div class="form-group my-5">
       <strong><%= form.label :email, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>
-      <%= form.text_field :email, placeholder: "Enter your email" , class:"form-control w-75 mb-2 border border-dark" %>
+      <%= form.text_field :email, placeholder: "Enter your email" , class:"form-control w-75 mb-2 border border-dark", :required => true %>
     </div>
 
     <div class="form-group my-5">
     <strong><%= form.label :password, style: "display: block", class:"control-label col-sm-2 p-2" %></strong>
-      <%= form.password_field :password, placeholder: "Enter your password" , class:"form-control w-75 mb-2 border border-dark" %>
+      <%= form.password_field :password, placeholder: "Enter your password" , class:"form-control w-75 mb-2 border border-dark", :required => true%>
     </div>
   
     <% if params[:desig] == "owner" %>

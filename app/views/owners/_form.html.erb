@@ -1,5 +1,4 @@
-<div class:"bg-warning">
-
+<div class:"bg-warning">  
   <%= form_with(model: owner) do |form| %>
     <% if owner.errors.any? %>
       <div style="color: red; background-color: white; postion:absolute">
@@ -13,30 +12,41 @@
       </div>
     <% end %>
 
-    <div class="text-center border border-warning align-items-center border border-dark", style=" width :400px ;background-color: rgb(255,244,120); margin-left:720px;margin-top:50px;padding-left:35px;padding:20px; position:relative">
-      <div class="form-group my-5">
+    <div class="text-center border border-warning align-items-center border border-dark", style=" width :400px ;background-color: rgb(255,244,120); margin-left:720px;margin-top:70px;padding-left:35px;padding:20px; position:relative">
+      <div class="form-group my-4">
         <strong><%= form.label :name, style: "display: block" , class:"control-label mb-2 col-sm-2" %></strong>
-        <%= form.text_field :name, placeholder: "Enter your name", class:"form-control w-75 mb-2 border border-dark", :required => true %>
-    <% owner.errors.each do |error| %>
-      <% if error.full_message == "Name has already been taken" %>
-        <div style="color:red"><%= error.full_message %></div>
-      <% end %>
-    <% end %>
+        <%= form.text_field :name, placeholder: "Enter your name", class:"form-control w-75 mb-2 border border-dark", :required => true , value:@owner.name%>
     </div>
 
-      <div class="form-group my-5">
+      <div class="form-group my-4">
         <strong><%= form.label :email, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>
-        <%= form.text_field :email, placeholder: "Enter your email", class:"form-control w-75 mb-2 border border-dark" %>
+        <%= form.text_field :email, placeholder: "Enter your email", class:"form-control w-75 mb-2 border border-dark", :required => true, value:@owner.email %>
         
       </div>
 
-      <div class="form-group my-5">
+      <div class="form-group mt-4 mb-3">
         <strong><%= form.label :password, style: "display: block" , class:"control-label col-sm-2 p-2" %></strong>
-        <%= form.password_field :password, placeholder: "Choose a password", class:"form-control w-75 mb-2 border border-dark" %>
+        <% if !logged_in? %>
+          <%= form.password_field :password, placeholder: "Choose a password", class:"form-control w-75 mb-2 border border-dark", :required => true, value:@owner.password %>
+        <% else %>
+          <%= form.password_field :password, placeholder: "Enter old password", class:"form-control w-75 mb-2 border border-dark", value:@owner.password %>
+        <% end %>
       </div>
 
+      <% if logged_in? %>
+        <div class="form-group mt-4 mb-3">
+          <strong><%= form.label "NewPassword", style: "display: block" , class:"control-label col-sm-2 p-2" %></strong>
+          <%= form.password_field :new_password, placeholder: "Choose a new password", class:"form-control w-75 mb-2 border border-dark", value:@owner.password %>
+        </div>
+      <% end %>
+
       <div>
-        <%= form.submit "Sign up", class:"btn btn-warning border border-dark" %>
+        <% if !logged_in? %>
+          <%= form.submit "Sign up", class:"btn btn-warning border border-dark" %>
+        <% else %>
+          <%= form.submit "Edit", class:"btn btn-warning border border-dark" %>
+        <% end %>
+        
       </div>
       </div>
   <% end %>

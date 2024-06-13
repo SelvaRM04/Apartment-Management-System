@@ -1,10 +1,30 @@
-<h1>Editing tenant</h1>
+<body style="background-color: rgb(242,180,7);">
+
+<% if notice!=nil %>
+    <center>
+      <p style="background-color: rgb(15, 247, 131); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(0,100,0); color: rgb(0,100,0)">
+        <%= notice %>
+        <a href="" >
+          <i style="position:absolute; top:10px;right:10px;color:rgb(0,100,0)" class="fa fa-close "></i>
+        </a>
+      </p>
+    </center>
+  <% end %>
+
+  <% if alert!=nil %>
+    <center>
+      <p style="background-color: rgb(247, 198, 198); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(168, 25, 25); color: rgb(168, 25, 25)">
+        <%= alert %>
+        <a href="" >
+          <i style="position:absolute; top:10px;right:10px; color:rgb(168, 25, 25)" class="fa fa-close "></i>
+        </a>
+      </p>
+    </center>
+  <% end %>
+
+<h1 style="position:fixed;top:200px;left:200px">Edit<%= image_tag("tenant.png") %></h1>
 
 <%= render "form", tenant: @tenant %>
 
 <br>
 
-<div>
-  <%= link_to "Show this tenant", @tenant %> |
-  <%= link_to "Back to tenants", tenants_path %>
-</div>

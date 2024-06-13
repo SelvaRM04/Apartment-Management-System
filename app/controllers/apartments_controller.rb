@@ -59,21 +59,9 @@ class ApartmentsController < ApplicationController
 
   def main_page
     if session[:user]!=nil
-      if session[:desig] == "Owner"
-        respond_to do |format|
-          format.html { redirect_to owner_path(session[:user])}
-          format.json { head :no_content }
-        end
-      elsif session[:desig] == "Tenant"
-        respond_to do |format|
-          format.html { redirect_to house_path(Tenant.find(session[:user]).house_id)}
-          format.json { head :no_content }
-        end
-      elsif session[:desig] == "Security"
-        respond_to do |format|
-          format.html { redirect_to security_path(session[:user])}
-          format.json { head :no_content }
-        end
+      respond_to do |format|
+        format.html { redirect_to "/home"}
+        format.json { head :no_content }
       end
     end
   end

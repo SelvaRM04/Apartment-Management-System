@@ -1,0 +1,40 @@
+<body class="bg-danger";">
+    <% if notice!=nil %><center><div style="background-color: white; position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px"><%= notice %><a href="" ><i style="position:absolute; top:10px;right:10px" class="fa fa-close"></i></a></div></center>
+    
+    <% end %>
+    <h1 style="position:fixed;top:200px;left:200px">Security<%= image_tag("security.png") %></h1>
+
+    <%= form_with(url: add_path, method: :post) do |form| %>
+        <% if @security.errors.any? %>
+            <div style="color: red">
+                <h2><%= pluralize(@security.errors.count, "error") %> prohibited this security from being saved:</h2>
+
+                <ul>
+                    <% @security.errors.each do |error| %>
+                    <li><%= error.full_message %></li>
+                    <% end %>
+                </ul>
+            </div>
+        <% end %>
+
+        <div class="text-center border border-warning align-items-center border border-dark", style=" width :400px ;background-color: rgb(255, 212, 213); margin-left:720px;margin-top:50px;padding-left:35px;padding:20px; position:relative">
+
+            <div class="form-group my-5">
+                <strong><%= form.label :email, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>
+                <%= form.text_field :email, placeholder: "Enter security email", class:"form-control w-100 mb-2 border border-dark" %>
+            </div>
+
+            <div class="form-group my-5">
+                <strong><%= form.label :apartment, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>       
+                <%= form.select :apartment_id, Apartment.all.collect { |p| [ p.name, p.id ] },{:prompt => 'Select Apartment'}, class: "form-control w-100 mb-2 border border-dark" %>
+            </div>
+
+            <div>
+                <%= form.submit "Add", class:"btn btn-primary border border-dark" %>
+            </div>
+        </div>
+    <% end %>
+</body>
+
+
+<br>

@@ -1,38 +1,59 @@
 class OwnersController < ApplicationController
+  
+  before_action :require_user, except: [ :new, :create ]
   before_action :set_owner, only: %i[ edit update destroy ]
-
   # GET /owners or /owners.json
   def index
     @owners = Owner.all
     if session[:desig] != "Admin"
       respond_to do |format|
-       format.html { redirect_to owner_path(session[:user])} 
-       format.json { head :no_content } 
+        flash[:alert] = "Invalid request"
+        format.html { redirect_to "/home"} 
+        format.json { head :no_content } 
       end
     end 
   end
 
   # GET /owners/1 or /owners/1.json
   def show
-    @messages = Message.where(from_id: session[:user]).or(Message.where(to_id: session[:user])).order(created_at: :desc)
-    @messages_unread_count = 0
-    @messages.each do |message|
-      if message.status == false
-        @messages_unread_count+=1
+    if params[:id]
+      if params[:id].to_i != session[:user] || session[:desig] != "Owner"
+        flash[:alert] = "Invalid request"
       end
+      redirect_to "/home", :id => session[:user]
+    else
+      @messages = Message.where(from_id: session[:user]).or(Message.where(to_id: session[:user])).order(created_at: :desc)
+      @messages_unread_count = 0
+      @messages.each do |message|
+        if message.status == false
+          @messages_unread_count+=1
+        end
+      end
+      @owner = Owner.find(session[:user])
+      @houses = House.where(owner_id: session[:user])
     end
-    @owner = Owner.find(params[:id])
-    @houses = House.all
-    debugger
   end
 
   # GET /owners/new
   def new
-    @owner = Owner.new
+    if params[:owner] != nil
+      @owner = Owner.new(email:params[:owner][:email], name:params[:owner][:name], password:params[:owner][:password])
+    else
+      @owner = Owner.new
+    end
   end
 
   # GET /owners/1/edit
   def edit
+    if params[:id] && session[:desig] == "Owner"
+      if params[:id].to_i != session[:user]
+        flash[:alert] = "Invalid request"
+        redirect_to "/home", :id => session[:user]
+      else
+        redirect_to "/edit"
+      end
+    end
+
   end
 
   # POST /owners or /owners.json
@@ -43,12 +64,12 @@ class OwnersController < ApplicationController
       if @owner.save
         session[:user] = @owner.id
         session[:desig] = "Owner"
-        format.html { redirect_to owner_url(@owner), notice: "Owner was successfully created." }
-        format.json { render :show, status: :created, location: @owner }
+        format.html { redirect_to "/home", notice: "Owner was successfully created." }
+        
       else
         # format.html { render :new, status: :unprocessable_entity }
         # format.json { render json: @owner.errors, status: :unprocessable_entity }
-        format.html { redirect_to new_owner_path, notice: @owner.errors.full_messages }
+        format.html { redirect_to new_owner_path, notice: @owner.errors.full_messages[0] }
       end
     end
   end
@@ -56,12 +77,23 @@ class OwnersController < ApplicationController
   # PATCH/PUT /owners/1 or /owners/1.json
   def update
     respond_to do |format|
-      if @owner.update(owner_params)
-        format.html { redirect_to owner_url(@owner), notice: "Owner was successfully updated." }
-        format.json { render :show, status: :ok, location: @owner }
+      @updated_values = edit_params
+      if @updated_values[:password]!="" && @updated_values[:new_password]!=""
+        if @owner.authenticate(@updated_values[:password])
+          if @owner.update(name: @updated_values[:name],email: @updated_values[:email],password: @updated_values[:new_password])
+            format.html { redirect_to "/home", notice: "Owner was successfully updated." }
+          else
+            format.html { redirect_to "/edit", alert: @owner.errors.full_messages[0] }
+          end
+        else
+          format.html { redirect_to "/edit", alert: "Incorrect Password entered" }
+        end
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @owner.errors, status: :unprocessable_entity }
+        if @owner.update(name: @updated_values[:name],email: @updated_values[:email])
+          format.html { redirect_to "/home", notice: "Owner was successfully updated." }
+        else
+          format.html { redirect_to "/edit", alert: @owner.errors.full_messages[0] }
+        end
       end
     end
   end
@@ -71,7 +103,7 @@ class OwnersController < ApplicationController
     @owner.destroy!
 
     respond_to do |format|
-      format.html { redirect_to owners_url, notice: "Owner was successfully destroyed." }
+      format.html { redirect_to root_path, notice: "Owner was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -142,12 +174,20 @@ class OwnersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_owner
-      @owner = Owner.find(params[:id])
+      if params[:id]
+        @owner = Owner.find(params[:id])
+      else
+        @owner = Owner.find(session[:user])
+      end
     end
 
     # Only allow a list of trusted parameters through.
     def owner_params
       params.require(:owner).permit(:name, :email, :password)
+    end
+
+    def edit_params
+      params.require(:owner).permit(:name, :email, :password, :new_password)
     end
 
     def house_params

@@ -161,3 +161,36 @@ document.addEventListener('DOMContentLoaded',() => {
 
  
   <%= button_to "Logout", logout_path, :method => "delete" , data: { turbo_confirm: "Are you sure?" } , class: "btn btn-small btn-success" %>
+
+
+  <%= button_to "Destroy this admin", @admin, method: :delete %>
+
+
+    <nav class="navbar bg-primary border-bottom border-body d-lg-flex navbar-expand-lg navbar-dark bg-dark align-items-center justify-content-between" data-bs-theme="dark", style="height:80px">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+    <div class="d-flex w-100 text-center align-items-center justify-content-between"
+    <ul class="collapse navbar-collapse" id="navbarSupportedContent">
+    <% if session[:desig] == "Owner" %>
+      <div class="navbar-nav w-50 mb-lg-0 align-items-center list-inline-item justify-content-evenly">
+        <strong>
+          <%= link_to "AMS", root_path, class:"navbar-brand fs-1 text-warning", style:"margin-left:40px"%>
+        </strong>
+        <li class="nav-item list-inline-item">
+          <%= link_to "Home", root_path , class: "btn btn-small btn-dark my-2 text-warning border border-warning" %> 
+        </li>
+        <li class="nav-item list-inline-item">
+          <%= link_to "Edit profile", "/edit" , class: "btn btn-small btn-dark my-2 text-warning border border-warning" %> 
+        </li>
+        <li class="nav-item list-inline-item">
+          <%= link_to "Add house", new_house_path, class: "btn btn-small btn-dark my-2 text-warning border border-warning" %>
+        </li>
+      </div>
+      <li class="nav-item list-inline-item">
+        <%= link_to "Logout", logout_path, :method => "delete" , data: { turbo_confirm: "Are you sure?" }, class:"btn btn-warning my-2", style:"margin-right:40px" %>
+      </li>
+    <% end %>
+    </ul>
+    </div>
+  </nav>

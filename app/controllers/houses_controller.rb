@@ -1,4 +1,5 @@
 class HousesController < ApplicationController
+  before_action :require_user
   before_action :set_house, only: %i[ show edit update destroy ]
 
   # GET /houses or /houses.json
@@ -8,25 +9,52 @@ class HousesController < ApplicationController
 
   # GET /houses/1 or /houses/1.json
   def show
-    @messages_owner = []
-    @messages_security = []
-    @house.messages.each do |msg|
-      if msg.from_desig == "Owner" || msg.to_desig == "owner"
-        @messages_owner << msg
-      elsif msg.from_desig == "Security" || msg.to_desig == "security"
-        @messages_security << msg
+    if session[:desig] == "Owner"
+      if @house.owner_id != session[:user]
+        flash[:alert] = "Unauthorized request"
+        redirect_to "/home", :id => session[:user]
+      else
+        @messages_owner = []
+        @house.messages.each do |msg|
+          if msg.from_desig == "Owner" || msg.to_desig == "owner"
+            @messages_owner << msg
+          end
+        end
+        @messages = @messages_owner
       end
+
+    elsif session[:desig] == "Security"
+      @security = Apartment.find(Block.find(House.find(@house.id).block_id).apartment_id).security
+      @security = @security.id if @security
+      if !@security || @security != session[:user]
+        flash[:alert] = "Unauthorized request"
+        redirect_to "/home", :id => session[:user]
+      else
+        @messages_security = []
+        @house.messages.each do |msg|
+          if msg.from_desig == "Security" || msg.to_desig == "security"
+            @messages_security << msg
+          end
+        end
+        @messages = @messages_security
+      end
+
+    elsif session[:desig] == "Tenant"
+      @messages = @house.messages
+      if params[:id]
+        @house = House.find(params[:id])
+        if !@house.tenant || @house.tenant.id != session[:user]
+          flash[:alert] = "Invalid request"
+        end
+        redirect_to "/home", :id => session[:user]
+      end
+    
+    else
     end
 
-    if session[:desig] == "Owner"
-      @messages = @messages_owner
-    elsif session[:desig] == "Security"
-      @messages = @messages_security
-    else
-      @messages = @house.messages
-    end
-    @messages = @messages.reverse()
-    debugger
+    if @messages
+      @messages = @messages.reverse()
+    end 
   end
 
   # GET /houses/new
@@ -43,17 +71,26 @@ class HousesController < ApplicationController
     flag=0
     owner=0
     @house = house_params
-    @existing_house = House.find_by(doorno:@house[:doorno])
-    if @existing_house
-      @existing_block = Block.find(@existing_house.block_id)
-      if @existing_block.name == @house[:block]
-        @existing_apartment = Apartment.find(@existing_block.apartment_id)
-        if @existing_apartment.name == @house[:apartment]
-          flag=1
-          owner = 1 if @existing_house.owner_id == session[:user]
+    @existing_houses = House.where(doorno:@house[:doorno])
+    if @existing_houses
+      @existing_blocks = []
+      @existing_houses.each do |house|
+        block = Block.find(house.block_id)
+        if block.name == @house[:block]
+          @existing_blocks << block
+        end
+      end
+
+      if @existing_blocks.length > 0
+        @existing_blocks.each do |block|
+          apartment = Apartment.find(block.apartment_id)
+          if apartment.name == @house[:apartment]
+            flag = 1
+          end
         end
       end
     end
+
     respond_to do |format|
 
       if flag==0
@@ -80,8 +117,8 @@ class HousesController < ApplicationController
         @owner = Owner.find(session[:user])
         @owner.houses << house
         @owner.save
-        format.html { redirect_to owner_url(@owner), notice: "House was successfully added." }
-        format.json { render :show, status: :ok, location: @owner }
+        format.html { redirect_to "/home", notice: "House was successfully added." }
+        
       # else
       #   flash[:alert] = ["House belongs to another owner"]
       #   redirect_to :new_house_path
@@ -93,11 +130,9 @@ class HousesController < ApplicationController
       else
         #   flash[:notice] = "House belongs to another owner"
         # format.html { render new_house_path, status: :unprocessable_entity, notice: "House belongs to another owner" }
-        if owner == 1
-          format.html { redirect_to new_house_url(@owner), notice: "House already added to you." }
-        else
-          format.html { redirect_to new_house_url(@owner), notice: "House belongs to another owner." }
-        end
+        
+          format.html { redirect_to new_house_url(@owner), alert: "House already exists." }
+      
       end
     end
   end
@@ -117,10 +152,11 @@ class HousesController < ApplicationController
 
   # DELETE /houses/1 or /houses/1.json
   def destroy
+    # debugger
     @house.destroy!
 
     respond_to do |format|
-      format.html { redirect_to houses_url, notice: "House was successfully destroyed." }
+      format.html { redirect_to root_path, notice: "House was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -128,7 +164,12 @@ class HousesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_house
-      @house = House.find(params[:id])
+      if params[:id]
+        @house = House.find(params[:id])
+      elsif session[:desig] == "Tenant"
+        @house = House.find(Tenant.find(session[:user]).house_id)
+      end
+
     end
 
     # Only allow a list of trusted parameters through.

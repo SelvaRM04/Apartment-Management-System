@@ -3,8 +3,37 @@
 <%= render @admin %>
 
 <div>
-  <%= link_to "Edit this admin", edit_admin_path(@admin) %> |
-  <%= link_to "Back to admins", admins_path %>
+  <%= link_to "Edit this admin", edit_admin_path(@admin) %> 
+  <%= link_to "Add Security", add_security_path %>
 
-  <%= button_to "Destroy this admin", @admin, method: :delete %>
+  <%= link_to "Add Admin", new_admin_path %>
+</div>
+
+<h1>Houses</h1>
+<div>
+  <% @c=0 %>
+  <% if @houses.length == 0 %>
+  No Houses :(
+  <% else %>
+    <% @houses.each_with_index do |house, index| %>
+      <div>
+          <%= render house %>
+          
+      </div>
+    <% end %>
+  <% end %>
+
+<h1>Security</h1>
+<div>
+  <% @c=0 %>
+  <% if @securities.length == 0 %>
+  No Securities :(
+  <% else %>
+    <% @securities.each_with_index do |security, index| %>
+      <div>
+          <%= render security %>
+          
+      </div>
+    <% end %>
+  <% end %>
 </div>
