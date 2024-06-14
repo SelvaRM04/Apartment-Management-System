@@ -194,3 +194,10 @@ document.addEventListener('DOMContentLoaded',() => {
     </ul>
     </div>
   </nav>
+
+
+  <% if @messages_unread_count > 0 %>
+    <div id="houses" class="my-5" style="border: 1px solid black;padding-left:30px;margin-left:30px;margin-right:30px;background-color:rgb(133, 190, 237);padding:50px;">
+  <% else %>
+    <div id="houses" class="my-5" style="border: 1px solid black;padding-left:30px;margin-left:30px;margin-right:30px;background-color: rgb(255,244,120);padding:50px;">
+  <% end %>

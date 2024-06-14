@@ -59,7 +59,12 @@ class HousesController < ApplicationController
 
   # GET /houses/new
   def new
-    @house = House.new
+    if session[:desig] != "Owner"
+      flash[:alert] = "Invalid request"
+      redirect_to "/home"
+    else
+      @house = House.new
+    end
   end
 
   # GET /houses/1/edit
@@ -152,7 +157,7 @@ class HousesController < ApplicationController
 
   # DELETE /houses/1 or /houses/1.json
   def destroy
-    # debugger
+    #  # debugger
     @house.destroy!
 
     respond_to do |format|

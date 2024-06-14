@@ -13,7 +13,9 @@ class MessagesController < ApplicationController
   def show
     if @message.to_id == session[:user] || @message.from_id == session[:user]
       @image_show = true
-      @message.status = true;
+      if @message.message_type != "approval"
+        @message.status = true;
+      end
       @message.save
       # if @message.to_desig == "tenant"
       #   if @message.from_desig == "Tenant"
@@ -77,7 +79,7 @@ class MessagesController < ApplicationController
       if @apartment.security == nil
         format.html { redirect_to house_url(@house), notice: "Security not assigned! Contact neighbours  " }
       else
-      @message = Message.new(from_id:params[:from_id], from_desig: "Tenant",to_id: @apartment.security.id, to_desig:"security", message:"Emergency!!!",status:false,message_type:"emergency", house_id:@house)
+      @message = Message.new(from_id:session[:user], from_desig: "Tenant",to_id: @apartment.security.id, to_desig:"security", message:"Emergency!!!",status:false,message_type:"emergency", house_id:@house)
       end
     else
       @message = Message.new(message_params)
@@ -122,7 +124,10 @@ class MessagesController < ApplicationController
     @message.status = true
     @message.save
     respond_to do |format|
-    format.html { redirect_to house_url(params[:house_id]), notice: "Approved." }
+      if @message.message_type == "approval"
+        flash[:notice] = "Approved." 
+      end
+     redirect_to house_url(params[:house_id])
     end
   end
 

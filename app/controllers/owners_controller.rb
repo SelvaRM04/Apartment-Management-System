@@ -69,7 +69,7 @@ class OwnersController < ApplicationController
       else
         # format.html { render :new, status: :unprocessable_entity }
         # format.json { render json: @owner.errors, status: :unprocessable_entity }
-        format.html { redirect_to new_owner_path, notice: @owner.errors.full_messages[0] }
+        format.html { redirect_to new_owner_path, alert: @owner.errors.full_messages[0] }
       end
     end
   end

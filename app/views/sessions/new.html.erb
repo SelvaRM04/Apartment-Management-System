@@ -1,42 +1,84 @@
 <% if params[:desig] == "owner" %>
   <body style="background-color: rgb(242,180,7)">
 <% elsif params[:desig] == "tenant" %>
-  <body class="bg-success">
+  <body style="background-color: #61892F">
 <% elsif params[:desig] == "security" %>
-  <body class="bg-primary">
+  <body style="background-color: #5085A5">
 <% elsif params[:desig] == "admin" %>
-  <body class="bg-danger">
+  <body style="background-color: #C96567">
 <% end %>
 
-<% if alert!=nil %><center><p style="background-color: rgb(247, 198, 198); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(168, 25, 25); color: rgb(168, 25, 25)"><%= alert %><a href="" ><i style="position:absolute; top:10px;right:10px; color:rgb(168, 25, 25)" class="fa fa-close "></i></a></p></center>
-<% end %>
-
-
-<h1 style="position:fixed;top:230px;left:233px">Login
-  <% if @desig == "owner" %>
-    <%= image_tag("owner.png") %>
-  <% elsif @desig == "tenant" %>
-    <%= image_tag("tenant.png") %>
-  <% elsif @desig == "admin" %>
-    <%= image_tag("admin.png") %>
-  <% else %>
-    <%= image_tag("security.png") %>
+  <% if notice!=nil %>
+    <center>
+      <p style="background-color: rgb(15, 247, 131); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(0,100,0); color: rgb(0,100,0)">
+        <%= notice %>
+        <a href="" >
+          <i style="position:absolute; top:10px;right:10px;color:rgb(0,100,0)" class="fa fa-close "></i>
+        </a>
+      </p>
+    </center>
   <% end %>
-</h1>
 
-<%= render "form", owner: @owner %>
-
-<br>
-
-<div style="margin-left:780px">
-  <% if @desig!= "admin" %><strong>Don&#8217;t have an account ? </strong><% end %>
-  <% if @desig == "owner" %>
-    <strong><%= link_to "Sign up", new_owner_path, class:"btn btn-primary" %></strong>
-  <% elsif @desig == "tenant" %>
-    <strong><%= link_to "Sign up", new_tenant_path, class:"btn btn-dark" %></strong>
-  <% elsif @desig == "security" %>
-    <strong><%= link_to "Sign up", new_security_path, class:"btn btn-dark" %></strong>
-    
+  <% if alert!=nil %>
+    <center>
+      <p style="background-color: rgb(247, 198, 198); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(168, 25, 25); color: rgb(168, 25, 25)">
+        <%= alert %>
+        <a href="" >
+          <i style="position:absolute; top:10px;right:10px; color:rgb(168, 25, 25)" class="fa fa-close "></i>
+        </a>
+      </p>
+    </center>
   <% end %>
-</div>
+  <br>
+  <div style="display: flex;
+              justify-content: center;
+              align-items:center;
+              flex-wrap: wrap;
+              column-gap: 2rem;
+              flex: 1;
+              margin:0;
+              -webkit-transform: translateY(25%);
+              -ms-transform: translateY(50%);
+              transform: translateY(25%);">
+    <div style="width: max(20vw, 300px);" class="my-5">
+      <div class="d-flex justify-content-center h1 text-dark">Login</div>
+      <div class="d-flex justify-content-center">
+        <% if @desig == "owner" %>
+          <%= image_tag("owner.png") %>
+        <% elsif @desig == "tenant" %>
+          <%= image_tag("tenant.png") %>
+        <% elsif @desig == "admin" %>
+          <%= image_tag("admin.png") %>
+        <% else %>
+          <%= image_tag("security.png") %>
+        <% end %>
+      </div>
+    </div>
+
+    <div style="width: max(20vw, 420px);">
+      <div>
+        <%= render "form" %>
+      </div>
+
+      <div style="align-items:center" class="d-flex justify-content-around py-3 w-75 mx-auto">
+        <% if @desig != "admin" %>
+          <strong>Don&#8217;t have an account?  </strong>
+        <% end %>
+        <% if @desig == "owner" %>
+          <strong style="justify-content:center">
+            <%= link_to "Sign up", new_owner_path, class:"btn btn-dark" %>
+          </strong>
+        <% elsif @desig == "tenant" %>
+          <strong>
+            <%= link_to "Sign up", new_tenant_path, class:"btn btn-dark" %>
+          </strong>
+        <% elsif @desig == "security" %>
+          <strong>
+            <%= link_to "Sign up", new_security_path, class:"btn btn-dark" %>
+          </strong>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <br>
 </body>

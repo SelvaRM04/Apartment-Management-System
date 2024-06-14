@@ -1,4 +1,9 @@
-<% if notice!=nil %>
+<% if session[:desig] == "Tenant" %>
+  <body style="background-color: #61892F">
+<% elsif session[:desig] == "Owner" %>
+  <body style="background-color: rgb(250, 212, 42)">
+<% end %>
+  <% if notice!=nil %>
     <center>
       <p style="background-color: rgb(15, 247, 131); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(0,100,0); color: rgb(0,100,0)">
         <%= notice %>
@@ -20,134 +25,356 @@
     </center>
   <% end %>
   <br>
-<div>
-<% @messages_unread_count = 0 %>
-<% @apartment = Block.find(@house.block_id).apartment_id %>
-    <% if @messages %>
-      <% @messages.each do |msg| %>
-        <% if msg.status == false and msg.to_id==session[:user] %>
-        <% # debugger %>
-          <% @messages_unread_count += 1 %>
+
+  <div class="container">
+    <% @messages_unread_count = 0 %>
+    <% @apartment = Block.find(@house.block_id).apartment_id %>
+        <% if @messages %>
+          <% @messages.each do |msg| %>
+            <% if msg.status == false and msg.to_id==session[:user] %>
+              <% @messages_unread_count += 1 %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+
+    <div id="<%= dom_id @house.tenant %>" class= "w-50 w-sm-100 p-2 mt-2 rounded border border-dark m-auto" style="background-color: rgb(255, 255, 255)">
+      <div class=" d-flex justify-content-center">
+        <div>
+          <p>
+            <strong>
+              Apartment:
+            </strong>
+            <%= Apartment.find(Block.find(@house.block_id).apartment_id).name %>
+          </p>
+
+          <p>
+            <strong>
+              Block:
+            </strong>
+            <%= Block.find(@house.block_id).name %>
+          </p>
+
+          <p>
+            <strong>
+              Doorno:
+            </strong>
+            <%= @house.doorno %>
+          </p>
+
+          <% if session[:desig] != "Owner" %>
+            <p>
+              <strong>
+                Owner :
+              </strong>
+              <%= Owner.find(@house.owner_id).name %>
+            </p>
+          <% end %>
+
+          <% if session[:desig] != "Tenant" %>
+            <p>
+              <strong>
+                Tenant :
+              </strong>
+              <% if @house.tenant!=nil %>
+                <%= @house.tenant.name %>
+              <% else %>
+                Not Occupied
+              <% end %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+
+      <div class=" d-flex justify-content-around  w-75 mx-auto">
+        <% if session[:desig] == "Owner" %>
+          <% if @house.tenant!=nil %>
+            <%= link_to "Ask for Rent", new_message_path(desig:"tenant",to_id:@house.tenant, type:"rent" ), method: :get, class:"btn btn-success" %>
+          <% end %>
+        <% elsif session[:desig] == "Tenant" %>
+          <div>
+            <%= button_to "Emergency", messages_path, method: :post, params: {message_type: "emergency"}, class:"btn btn-success" %>
+          </div>
+          <div> 
+            <%= link_to "Message", new_message_path(to_id: Owner.find(@house.owner_id), desig: "owner", type:"general"), class:"btn btn-success" %>
+          </div>
+        <% elsif session[:desig] == "Security" %>
+          <% if @house.tenant!=nil %>
+            <%= link_to "Ask for Approval", new_message_path(desig:"tenant",to_id:@house.tenant, type:"approval" ), method: :get, class:"btn btn-success" %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <br>
+  <br>
+
+  <h1 class="text-center">Messages <% if @messages_unread_count > 0 %>( <%= @messages_unread_count %> )<% end %></h1>
+    <% if !@messages or @messages.length == 0 %>
+      <div class="border border-dark p-5 w-50 h-100 m-auto " style="background-color: rgb(200, 252, 151)">
+        <p class="text-center fs-2">No Messages :(</p>
+      </div>
+      <br>
+    <% else %>
+      <% messages_unread = [] %>
+      <% messages_read = [] %>
+      <% @messages.each do |message| %>
+        <% if message.status == false && message.from_desig != session[:desig] %>
+          <% messages_unread << message %>
         <% end %>
       <% end %>
-    <% end %>
-<% if @messages_unread_count > 0 %>
-  <div id="houses" class="my-5" style="border: 1px solid black;padding-left:30px;margin-left:30px;margin-right:30px;background-color:rgb(133, 190, 237);padding:50px;">
-<% else %>
-  <div id="houses" class="my-5" style="border: 1px solid black;padding-left:30px;margin-left:30px;margin-right:30px;background-color: rgb(255,244,120);padding:50px;">
-<% end %>
-<p>
-  <strong>Apartment:</strong>
-  <%= Apartment.find(Block.find(@house.block_id).apartment_id).name %>
-</p>
 
-<p>
-  <strong>Block:</strong>
-  <%= Block.find(@house.block_id).name %>
-</p>
-
-<p>
-  <strong>Doorno:</strong>
-  <%= @house.doorno %>
-</p>
-
-<% if session[:desig] != "Owner" %>
-  <p>
-    <strong>Owner:</strong>
-    <%= Owner.find(@house.owner_id).name %>
-  </p>
-<% end %>
-
-<p>
-  <strong>Tenant :</strong>
-  <% if @house.tenant!=nil %>
-    <%= @house.tenant.name %>
-  <% else %>
-    Not Occupied
-  <% end %>
-</p>
-
-<% if session[:desig] == "Owner" %>
-  <% if @house.tenant!=nil %>
-    <%= link_to "Ask for Rent", new_message_path(desig:"tenant",to_id:@house.tenant, type:"rent" ), method: :get, class:"btn btn-success" %>
-  <% end %>
-    
-<% elsif session[:desig] == "Tenant" %>
-    <%= link_to "Message Owner", new_message_path(to_id: Owner.find(@house.owner_id), desig: "owner", type:"general"), class:"btn btn-success" %>
-    <%= button_to "Emergency", messages_path, method: :post, params: {message_type: "emergency"}, class:"btn btn-success" %>
-<% elsif session[:desig] == "Security" %>
-  <% if @house.tenant!=nil %>
-    <%= link_to "Ask for Approval", new_message_path(desig:"tenant",to_id:@house.tenant, type:"approval" ), method: :get, class:"btn btn-success" %>
-  <% end %>
-<% end %>
-</div>
-</div>
-
-
-
-
-
-
-<h1>Messages</h1><%= @messages_unread_count.to_s+" new messages" if @messages_unread_count > 0 %>
-
-<div id="messages">
-  <% if !@messages or @messages.length == 0 %>
-    <div class="border border-dark p-5 w-50 h-100 m-auto " style="background-color:rgb(255,244,120)">
-      <p class="text-center fs-2">No Messages :(</p>
-    </div>
-    <br>
-  <% else %>
-    <% messages = [] %>
-    <% @messages.each do |message| %>
-      <% if message.status == false && message.from_desig != session[:desig] %>
-        <% messages << message %>
-      <% end %>
-    <% end %>
-
-    <% @messages.each do |message| %>
-      <% if !(message.status == false && message.from_desig != session[:desig] )%>
-        <% messages << message %>
-      <% end %>
-    <% end %>
-
-    <% messages.each do |message| %>
-      <% if message.status == true || message.from_desig == session[:desig] %>
-        <div class="bg-warning">
-      <% else %>
-        <div style="background-color: rgb(133, 190, 237)">
+      <% @messages.each do |message| %>
+        <% if (message.status == true && message.from_desig != session[:desig] ) || message.from_desig == session[:desig] %>
+          <% messages_read << message %>
+        <% end %>
       <% end %>
 
-        <%= render message %>
+      <div>
+        <% messages_unread.each do |message| %>
+          <div class="d-flex justify-content-center">
+            <div style="width:100%">
+              <div id="<%= dom_id message %>">
+                <div id="unread_messages" class="my-3 d-flex justify-content-between" style="border: 1px solid black;padding-left:30px;margin-left:30px;margin-right:30px;background-color: rgb(200, 252, 151);padding:50px;">
+                  <div>
+                    <p>
+                      <strong>
+                        Date :
+                      </strong>
+                      <%= (message.created_at + 5*60*60 + 30*60).to_time.strftime('%B %e at %l:%M %p') %>
+                      <%= time_ago_in_words(message.created_at) %> ago
+                    </p>
+          
+                    <p>
+                      <% if session[:user]!=message.from_id %>
+                        <strong>
+                          From :
+                        </strong>
+                        <% if message.from_desig == "Owner" %>
+                          <%= Owner.find(message.from_id).name+" ( Owner )" %>
+                        <% elsif message.from_desig == "Tenant" %>
+                          <%= Tenant.find(message.from_id).name+" ( Tenant )" %>
+                        <% else %>
+                          <%= Security.find(message.from_id).name+" ( Security )" %>
+                        <% end %>
+                      <% end %>
+                    </p>
+
+                    <p>
+                      <% if session[:user]!=message.to_id %>
+                        <strong>
+                          To :
+                        </strong>
+                        <% if message.to_desig == "owner" %>
+                          <%= Owner.find(message.to_id).name+" ( Owner )" %>
+                        <% elsif message.to_desig == "tenant" %>
+                          <%= Tenant.find(message.to_id).name+" ( Tenant )" %>
+                        <% elsif message.to_desig == "security" %>
+                          <%= Security.find(message.to_id).name+" ( Security )" %>
+                        <% end %>
+                      <% end %>
+                    </p>
+            
+                    <p>
+                      <strong>Message :</strong>
+                      <%= message.message %>
+                    </p>
+
+                    <p>
+                      <strong>
+                        Attachment :
+                      </strong>
+                      <% if message.image.attached? %>
+                        Image attached
+                      <% else %> 
+                        No image
+                      <% end %>
+                    </p>
+
+                    <div class="d-flex justify-content-between", style="width:30%">
+                      <% if session[:desig] == "Owner" %>
+                        <div>
+                          <%= link_to "Show", message, class:"btn btn-dark" %>
+                        </div>
+                      <% elsif session[:desig] == "Tenant" %>
+                        <% if message.message_type == "approval" %>
+                          <div>
+                            <%= button_to "Approve", approve_path, method: :post, params: {message_id: message.id, house_id: @house}, class:"btn btn-dark"  %>
+                        </div>
+                        <% end %>
+                        <% if message.message_type != "emergency" %>
+                          <div>
+                            <%= link_to "Show", message, class:"btn btn-dark" %>
+                          </div>
+                        <% end %>
+                      <% elsif session[:desig] == "Security" %>
+                        <% if message.message_type != "emergency" %>
+                          <%= link_to "Show", message, class:"btn", style:"background-color: #61892F;color:white" %>
+                        <% else %>
+                          <%= button_to "Mark as read", approve_path, method: :post, params: {message_id: message.id, house_id: @house}, class:"btn btn-dark" %>
+                        <% end %>
+                      <% end %>  
+                    </div>
+                  </div>
+                  <div>
+                    <div style="height:80%">
+                      <% if message.from_desig == session[:desig] %>
+                        <div style="font-size:14px">
+                          <%= (message.created_at + 5*60*60 + 30*60).to_time.strftime('%I:%M %p') %>
+                          <i class="fa fa-clock-o"></i>
+                        </div>
+                        
+                        <% if message.status == true %>
+                          <div style="font-size:14px">
+                            <%= (message.updated_at + 5*60*60 + 30*60).to_time.strftime('%I:%M %p') %>
+                            <i class="fa fa-check"></i>
+                          </div>
+                        <% end %>
+                      <% else %>
+                        <div style="font-size:14px">
+                          <%= (message.created_at + 5*60*60 + 30*60).to_time.strftime('%I:%M %p') %>
+                          <i class="fa fa-envelope"></i>
+                        </div>
+                      <% end %>
+                    </div>
+                    <div>
+                      <% if message.message_type == "approval" && session[:desig] == "Tenant" %>
+                        <p class="fst-italic fw-light", style="font-size:14px">Approved</p>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <% if @messages_unread_count != 0 %>  
+        <center>
+          <hr class="border border-2 border-white w-75 my-5" style="border-color: black;"/>
+        </center>
+      <% end %>
+
+      <div>
+        <% current_date = nil %>
+        <% messages_read.each do |message| %>
+          <% if current_date != message.created_at.strftime('%d %b %Y') %>
+            <div>
+              <center>
+                <h3><%= message.created_at.strftime('%d %b %Y') %></h3>
+              </center>
+            </div>
+            <% current_date = message.created_at.strftime('%d %b %Y') %>
+          <% end %>
         
-        <p>
-          <% if session[:desig] == "Tenant" && message.message_type=="approval" %>
-            <% if message.status == false %>
-              <%= button_to "Approve", approve_path, method: :post, params: {message_id: message.id, house_id: @house} %>
-            <% else %>
-              <%= button_to "Approved", :disabled => true %>
-            <% end %>
-          <% elsif session[:desig] == "Security" && message.message_type=="approval" %>
-            <% if message.status == false %>
-              <%= link_to "Waiting for approval", class:"btn btn-success" %>
-            <% else %>
-              <%= button_to "Approved", :disabled => true %>
-            <% end %>
-          <% elsif session[:desig] == "Security" && message.message_type == "emergency" %>
-            <% if message.status == false %>  
-              <%= button_to "Mark as read", approve_path, method: :post, params: {message_id: message.id, house_id: @house} %>
-            <% end %>
-          <% elsif message.message_type != "emergency" %>
-            <%= link_to "Show this message", message, class:"btn btn-success" %>
-          <% end %>
-          <% if message.from_desig == session[:desig] %>
-            <% if message.status == true %>
-              Read &#10004;
-            <% else %>
-              Received &#10003;
-            <% end %>
-          <% end %>
-        </p>
+          <div class="d-flex justify-content-center">
+            <div style="width:90%">
+              <div id="<%= dom_id message %>">
+                <div id="read_messages" class="my-3 d-flex justify-content-between" style="border: 1px solid black;padding-left:30px;margin-left:30px;margin-right:30px;background-color: rgb(255,255,255);padding:50px;">
+                  <div>
+      
+                    <p>
+                      <% if session[:user]!=message.from_id %>
+                        <strong>
+                          From :
+                        </strong>
+                        <% if message.from_desig == "Owner" %>
+                          <%= Owner.find(message.from_id).name+" ( Owner )" %>
+                        <% elsif message.from_desig == "Tenant" %>
+                          <%= Tenant.find(message.from_id).name+" ( Tenant )" %>
+                        <% else %>
+                          <%= Security.find(message.from_id).name+" ( Security )" %>
+                        <% end %>
+                      <% end %>
+                    </p>
+
+                    <p>
+                      <% if session[:user]!=message.to_id %>
+                        <strong>
+                          To :
+                        </strong>
+                        <% if message.to_desig == "owner" %>
+                          <%= Owner.find(message.to_id).name+" ( Owner )" %>
+                        <% elsif message.to_desig == "tenant" %>
+                          <%= Tenant.find(message.to_id).name+" ( Tenant )" %>
+                        <% elsif message.to_desig == "security" %>
+                          <%= Security.find(message.to_id).name+" ( Security )" %>
+                        <% end %>
+                      <% end %>
+                    </p>
+              
+                    <p>
+                      <strong>Message :</strong>
+                      <%= message.message %>
+                    </p>
+
+                    <p>
+                      <strong>
+                        Attachment :
+                      </strong>
+                      <% if message.image.attached? %>
+                        Image attached
+                      <% else %> 
+                        No image
+                      <% end %>
+                    </p>
+
+                    <div class="d-flex justify-content-between">
+                      <% if session[:desig] == "Owner" %>
+                        <div>
+                          <%= link_to "Show", message, class:"btn btn-dark" %>
+                        </div>
+                      <% elsif session[:desig] == "Tenant" %>
+                        <% if message.message_type != "emergency" %>
+                          <div><%= link_to "Show", message, class:"btn", style:"background-color: #61892F;color:white" %></div>
+                        <% end %>
+                      <% elsif session[:desig] == "Security" %>
+                        <% if message.message_type != "emergency" %>
+                          <%= link_to "Show", message, class:"btn", style:"background-color: #61892F;color:white" %>
+                        <% end %>
+                        <% if message.message_type=="approval" %>
+                          <% if message.status == true %>
+                            <%= button_to "Approved", :disabled => true %>
+                          <% else %>
+                            <%= button_to "Waiting", :disabled => true %>
+                          <% end %>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="height:80%">
+                      <% if message.from_desig == session[:desig] %>
+                        <div style="font-size:14px">
+                          <%= (message.created_at + 5*60*60 + 30*60).to_time.strftime('%I:%M %p') %>
+                          <i class="fa fa-clock-o"></i>
+                        </div>
+                        
+                        <% if message.status == true %>
+                          <div style="font-size:14px">
+                            <%= (message.updated_at + 5*60*60 + 30*60).to_time.strftime('%I:%M %p') %>
+                            <i class="fa fa-check"></i>
+                          </div>
+                        <% end %>
+                      <% else %>
+                        <div style="font-size:14px">
+                          <%= (message.created_at + 5*60*60 + 30*60).to_time.strftime('%I:%M %p') %>
+                          <i class="fa fa-envelope-open-o"></i>
+                        </div>
+                      <% end %>
+                    </div>
+                    <div>
+                      <% if message.message_type == "approval" && session[:desig] == "Tenant" %>
+                        <p class="fst-italic fw-light", style="font-size:14px">Approved</p>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>        
+        <% end %>
       </div>
     <% end %>
-  <% end %>
-</div>
+</body>

@@ -25,7 +25,7 @@ class TenantsController < ApplicationController
     else
       @messages = Message.order("created_at DESC").where(from_id: session[:user]).or(Message.where(to_id: session[:user]))
     end
-    # debugger
+    #  # debugger
   end
 
   # GET /tenants/new
@@ -57,33 +57,43 @@ class TenantsController < ApplicationController
   # POST /tenants or /tenants.json
   def create
     respond_to do |format|
+
+      @tenant = Tenant.new(tenant_params)
       @apartment = Apartment.find(params[:tenant]["apartment"]).blocks
       @ap = Block.where(name:params[:tenant]["block"], apartment_id: params[:tenant]["apartment"])
       if @ap.length !=0
         @ap.each do |block|
           @h = House.where(doorno: params[:tenant]["doorno"],block_id: block.id)
           @h = @h[0]
-          # debugger
-          debugger
+          #  # debugger
+          
           if @h && @h.tenant == nil
-            @tenant = Tenant.new(tenant_params)
-            @h.tenant = @tenant
-            debugger
-            # debugger
-            if @h.save
-              session[:user] = @tenant.id
-              session[:desig] = "Tenant"
-              format.html { redirect_to "/home", notice: "Tenant was successfully created." }
+            if Tenant.find_by(name:@tenant.name) != nil
+              format.html { redirect_to new_tenant_path, alert: "Name has already taken" }
+            elsif Tenant.find_by(email: @tenant.email) != nil
+              format.html { redirect_to new_tenant_path, alert: "Email has already taken" }
             else
-              format.html { redirect_to new_tenant_path, alert: "Invalid! Try again" }
+             # debugger
+            #  # debugger
+              @h.tenant = @tenant
+              if @h.save
+                session[:user] = @h.tenant.id
+                session[:desig] = "Tenant"
+                debugger
+                format.html { redirect_to "/home", notice: "Tenant was successfully created." }
+              else
+                format.html { redirect_to new_tenant_path, alert: "Invalid! Try again" }
+              end
             end
           else
             format.html { redirect_to new_tenant_path, alert: "Invalid! House is occupied already" }
           end
         
         end
+      else
+        format.html { redirect_to new_tenant_path, alert: "Invalid! House doesn\'t exist" }
       end
-      # debugger
+      #  # debugger
 
     format.html { render :new, status: :unprocessable_entity }
     format.json { render json: @tenant.errors, status: :unprocessable_entity }
@@ -94,7 +104,7 @@ class TenantsController < ApplicationController
   def update
     respond_to do |format|
       @updated_values = edit_params
-      if @updated_values[:password]!=nil && @updated_values[:new_password]!=nil
+      if @updated_values[:password]!="" && @updated_values[:new_password]!=""
         if @tenant.authenticate(@updated_values[:password])
           if @tenant.update(name: @updated_values[:name],email: @updated_values[:email],password: @updated_values[:new_password])
             format.html { redirect_to "/home", notice: "Tenant was successfully updated." }

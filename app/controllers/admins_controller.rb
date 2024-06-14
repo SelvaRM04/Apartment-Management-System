@@ -41,7 +41,7 @@ class AdminsController < ApplicationController
   # POST /admins or /admins.json
   def create
     @admin = Admin.new(admin_params)
-    # debugger
+    #  # debugger
     respond_to do |format|
       if @admin.save
         session[:user] = @admin.id
@@ -93,14 +93,14 @@ class AdminsController < ApplicationController
   def add 
     respond_to do |format|
     @existing = Security.find_by(email: params["email"])
-    # debugger
+    #  # debugger
     if(@existing != nil)
       format.html { redirect_to add_security_path, notice: "Security already exists" }
     else
       @security = Security.new(security_params)
       @apartment = Apartment.find(params["apartment_id"])
       @apartment.security = @security
-      # debugger
+      #  # debugger
         if @apartment.save
           format.html { redirect_to admin_url(session[:user]), notice: "Security was successfully created." }
         else
