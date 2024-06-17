@@ -1,17 +1,17 @@
 
-  <p style="color: green"><%= notice %></p>
-
+ 
+  <body style="background-color: #C96567">
   <h1>Owners</h1>
 
   <div id="owners">
     <% @owners.each do |owner| %>
       <%= render owner %>
-      <p>
-        <%= link_to "Show this owner", owner %>
-      </p>
     <% end %>
   </div>
+  <div style="align-items:center" class="d-flex justify-content-around py-3 w-75 mx-auto">
+  <strong>
+    <%= link_to 'Back', 'javascript:history.back()', class:"btn btn-dark" %>
+  </strong>
+</div>
 
-  <%= link_to "New owner", new_owner_path %>
-
-
+</body> 

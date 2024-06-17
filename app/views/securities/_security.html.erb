@@ -1,23 +1,32 @@
-<div id="<%= dom_id security %>">
-<div id="houses" class="my-5" style="border: 1px solid black;padding-left:30px;margin-left:30px;margin-right:30px;background-color: rgb(255,244,120);padding:50px;">
-  <p>
-    <% if security.name != nil %>
-      <strong>Name:</strong>
-      <%= security.name %>
-    <% else %>
-      Not yet signed up
+<div class="container">
+  <% if session[:desig] == "Security" %>
+    <div id="<%= dom_id security %>" class= "w-sm-100 w-xl-25 w-md-25 w-lg-25  p-2 mt-2 rounded border border-dark m-auto" style="background-color:rgb(212, 227, 255)" >
+  <% elsif session[:desig] == "Admin" %>
+  <div id="<%= dom_id security %>" class= "w-sm-100 w-xl-25 w-md-25 w-lg-25  p-2 mt-2 rounded border border-dark m-auto mb-2" style="background-color:rgb(255, 212, 213)" >
+  <% end %>
+    <p class="text-center">
+      <% if security.name != nil %>
+        <strong>Name:</strong>
+        <%= security.name %>
+      <% else %>
+        Not yet signed up
+      <% end %>
+    </p>
+
+    <p class="text-center">
+      <strong>Email:</strong>
+      <%= security.email %>
+    </p>
+
+    <p class="text-center">
+      <strong>Apartment:</strong>
+      <%= Apartment.find(security.apartment_id).name%>
+    </p>
+
+    <% if session[:desig] == "Admin" %>
+      <center>
+      <%= button_to "Delete", security, method: :delete , data: { turbo_confirm: "Are you sure?" }, class:"btn text text-white border border-dark my-3", style:"background-color:#C96567"%>
+      </center>
     <% end %>
-  </p>
-
-  <p>
-    <strong>Email:</strong>
-    <%= security.email %>
-  </p>
-
-  <p>
-    <strong>Apartment:</strong>
-    <%= Apartment.find(security.apartment_id).name%>
-  </p>
-
-</div>
+  </div>
 </div>

@@ -1,12 +1,19 @@
-<div id="<%= dom_id message %>">
-
-  <p class:"border border-primary">
+<% if session[:desig] == "Owner" %>
+  <div id="<%= dom_id message %>" class= "w-75 w-xl-100 w-sm-100 py-2 mt-2 rounded border border-dark m-auto mt-auto" style="background-color: rgb(255,244,120)">
+<% elsif session[:desig] == "Tenant" %>
+  <div id="<%= dom_id message %>" class= "w-75 w-xl-100 w-sm-100 py-2 mt-2 rounded border border-dark m-auto mt-auto" style="background-color: rgb(200, 252, 151)">
+<% elsif session[:desig] == "Security" %>
+  <div id="<%= dom_id message %>" class= "w-75 w-xl-100 w-sm-100 py-2 mt-2 rounded border border-dark m-auto mt-auto" style="background-color: rgb(212, 227, 255)">
+<% end %>
+  <div class=" d-flex justify-content-center">
+    <div style="width:400px">
+  <p class="pt-5 pb-3">
     <strong>Date:</strong>
     <%= (message.created_at + 5*60*60 + 30*60).to_time.strftime('%B %e at %l:%M %p') %>
     <%= time_ago_in_words(message.created_at) %> ago
   </p>
 
-  <p>
+  <p class="pb-3">
   <% if session[:desig] == "Owner" %>
     <% if message.from_desig == "Owner" %>
       <strong>To:</strong>
@@ -22,38 +29,42 @@
     <% elsif message.from_desig == "Owner" %>
       <strong>From:</strong>
       <%= Owner.find(message.from_id).name+" ( Owner )"  %>
-    <% elsif message.to_desig == "tenant" && message.from_desig == "security" %>
+    <% elsif message.from_desig == "Security" %>
       <strong>From:</strong>
       <%= Security.find(message.from_id).name+" ( Security )"  %>
 
-      <strong>Address:</strong>
-      <%= Tenant.find(message.from_id).house_id+" ( Neighbour )"  %>
     <% elsif message.to_desig == "security" %>
       <strong>From:</strong>
       <%= Security.find(message.to_id).name+" ( Security )"  %>
     <% end %>
+  <% elsif session[:desig] == "Security" %>
+    <strong>To:</strong>
+    <%= Tenant.find(message.to_id).name %>
   <% end %>
   </p>
 
-  <% if @image_show %>
-    <p>
-      <strong>House Name:</strong>
-      <%= @house_name %>
-    </p>
-  <% end %>
-  <p class:"btn btn-success" >
+  <p class="pb-3" >
     <strong>Message:</strong>
     <%= message.message %>
   </p>
 
-  
-  <div>
-    <% if message.image.attached? && @image_show %>
-      <%= image_tag  message.image, style: "width: 200px;display: block" %>
-      <% else %>
-    <% end %>
+  <div class="d-flex justify-content-left pb-5">
+    <p class="my-auto">
+      <strong>
+        Attachment :
+      </strong>
+    </p>
+    <p class="my-auto mx-2">
+      <% if message.image.attached? %>
+        <%= image_tag  message.image, style: "width: 200px;display: block" %>
+      <% else %> 
+        No image
+      <% end %>
+    </p>
   </div>
 
+</div>
+</div>
   
 
 </div>

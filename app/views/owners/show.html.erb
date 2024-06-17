@@ -1,5 +1,8 @@
-<body class="bg-warning">
-  
+<% if session[:desig] == "Owner" %>
+  <body style="background-color: rgb(235, 171, 52)">
+<% elsif session[:desig] == "Admin" %>
+  <body style="background-color: #C96567">
+<% end %> 
   <% if notice!=nil %>
     <center>
       <p style="background-color: rgb(15, 247, 131); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(0,100,0); color: rgb(0,100,0)">
@@ -30,7 +33,7 @@
 
   <h1 class="text-center">Houses <% if @houses.length > 0 %>( <%= @houses.length %> )<% end %></h1>
     <% if @houses.length == 0 %>
-      <div class="border border-dark p-5 w-50 h-100 m-auto " style="background-color:rgb(255,244,120)">
+      <div class="border border-dark p-5 w-50 h-100 m-auto " style="background-color: rgb(255,244,120)">
         <p class="text-center fs-2">No houses :(</p>
         <div class="text-center" >
           <%= link_to "Add house", new_house_path, class: "btn btn-small btn-dark m-auto" %>
@@ -38,13 +41,24 @@
       </div>
     
     <% else %>
+      
       <% @c=0 %>
       <% @houses.each_with_index do |house, index| %>
+        <% @messages_unread_count = 0 %>
+        <% house.messages.each do |msg| %>
+          <% if msg.status == false && msg.to_desig == session[:desig].downcase %>
+        
+            <% @messages_unread_count += 1 %>
+          <% end %>
+        <% end %>
         <div>
           <%= render house %> 
         </div>
       <% end %>
     <% end %>
 
+    <% if session[:desig] == "Admin" %>
+      <center><%= link_to 'Back', 'javascript:history.back()', class:"btn btn-dark mt-2 mb-5" %></center>
+    <% end %>
 </body>
 

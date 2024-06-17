@@ -6,10 +6,15 @@ class AdminsController < ApplicationController
   # GET /admins or /admins.json
   def index
     @admins = Admin.all
+    if session[:desig] != "Admin"
+      flash[:alert] = "Invalid request"
+      redirect_to "/home"
+    end
   end
 
   # GET /admins/1 or /admins/1.json
   def show
+    
     if params[:id]
       if params[:id].to_i != session[:user] || session[:desig] != "Admin"
         flash[:alert] = "Unauthorized request"
@@ -32,6 +37,10 @@ class AdminsController < ApplicationController
   # GET /admins/new
   def new
     @admin = Admin.new
+    if session[:desig] != "Admin"
+      flash[:alert] = "Invalid request"
+      redirect_to "/home"
+    end
   end
 
   # GET /admins/1/edit
@@ -44,13 +53,10 @@ class AdminsController < ApplicationController
     #  # debugger
     respond_to do |format|
       if @admin.save
-        session[:user] = @admin.id
-        session[:desig] = "Admin"
-        format.html { redirect_to admin_url(@admin), notice: "Admin was successfully created." }
+        format.html { redirect_to "/home", notice: "Admin was successfully created." }
         format.json { render :show, status: :created, location: @admin }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @admin.errors, status: :unprocessable_entity }
+        format.html { redirect_to new_admin_path(:type => "add"), alert: @admin.errors.full_messages[0] }
       end
     end
   end
@@ -58,12 +64,23 @@ class AdminsController < ApplicationController
   # PATCH/PUT /admins/1 or /admins/1.json
   def update
     respond_to do |format|
-      if @admin.update(admin_params)
-        format.html { redirect_to admin_url(@admin), notice: "Admin was successfully updated." }
-        format.json { render :show, status: :ok, location: @admin }
+      @updated_values = edit_params
+      if @updated_values[:password]!="" && @updated_values[:new_password]!=""
+        if @admin.authenticate(@updated_values[:password])
+          if @admin.update(name: @updated_values[:name],email: @updated_values[:email],password: @updated_values[:new_password])
+            format.html { redirect_to "/home", notice: "Admin was successfully updated." }
+          else
+            format.html { redirect_to "/edit", alert: @admin.errors.full_messages[0] }
+          end
+        else
+          format.html { redirect_to "/edit", alert: "Incorrect Password entered" }
+        end
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @admin.errors, status: :unprocessable_entity }
+        if @admin.update(name: @updated_values[:name],email: @updated_values[:email])
+          format.html { redirect_to "/home", notice: "Admin was successfully updated." }
+        else
+          format.html { redirect_to "/edit", alert: @admin.errors.full_messages[0] }
+        end
       end
     end
   end
@@ -94,19 +111,23 @@ class AdminsController < ApplicationController
     respond_to do |format|
     @existing = Security.find_by(email: params["email"])
     #  # debugger
-    if(@existing != nil)
-      format.html { redirect_to add_security_path, notice: "Security already exists" }
-    else
-      @security = Security.new(security_params)
-      @apartment = Apartment.find(params["apartment_id"])
-      @apartment.security = @security
-      #  # debugger
-        if @apartment.save
-          format.html { redirect_to admin_url(session[:user]), notice: "Security was successfully created." }
+      if(@existing != nil)
+        format.html { redirect_to add_security_path, alert: "Security already exists" }
+      else
+        @security = Security.new(security_params)
+        @apartment = Apartment.find(params["apartment_id"])
+        if @apartment.security != nil
+          format.html { redirect_to add_security_path, alert: "Apartment has a security already" }
         else
-          # format.html { render :new, status: :unprocessable_entity }
-          # format.json { render json: @owner.errors, status: :unprocessable_entity }
-          format.html { redirect_to add_security_path, notice: @apartment.errors.full_messages }
+          @apartment.security = @security
+          #  # debugger
+          if @apartment.save
+            format.html { redirect_to "/home", notice: "Security was successfully created." }
+          else
+            # format.html { render :new, status: :unprocessable_entity }
+            # format.json { render json: @owner.errors, status: :unprocessable_entity }
+            format.html { redirect_to add_security_path, notice: @apartment.errors.full_messages }
+          end
         end
       end
     end
@@ -132,5 +153,9 @@ class AdminsController < ApplicationController
 
     def email_param
       params.permit(:email)
+    end
+
+    def edit_params
+      params.require(:admin).permit(:name, :email, :password, :new_password)
     end
 end

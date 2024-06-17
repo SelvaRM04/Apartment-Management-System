@@ -1,19 +1,21 @@
 class MessagesController < ApplicationController
   
-  before_action :require_user, except: [ :new, :create ]
+  before_action :require_user
   before_action :set_message, only: %i[ show edit update destroy ]
 
   # GET /messages or /messages.json
   def index
     @messages = Message.where(from_id: session[:user]).or(Message.where(to_id: session[:user])).order(created_at: :desc)
     @image_show = false
+    flash[:alert] = "Unauthorized request"
+      redirect_to "/home"
   end
 
   # GET /messages/1 or /messages/1.json
   def show
     if @message.to_id == session[:user] || @message.from_id == session[:user]
       @image_show = true
-      if @message.message_type != "approval"
+      if @message.message_type != "approval" && @message.from_desig != session[:desig]
         @message.status = true;
       end
       @message.save
@@ -44,22 +46,36 @@ class MessagesController < ApplicationController
     @message = Message.new
     @to_id = params[:id]
     if session[:desig] == "Owner"
-      @from_id = Owner.find(session[:user]).name
-      @to_id = Tenant.find(params[:to_id]).name
-      @house_id = Tenant.find(params[:to_id]).house_id
-    elsif session[:desig] == "Tenant"
-      @from_id = Tenant.find(session[:user]).name
-      if params[:desig] == "Tenant"
+      begin
+        @from_id = Owner.find(session[:user]).name
         @to_id = Tenant.find(params[:to_id]).name
         @house_id = Tenant.find(params[:to_id]).house_id
-      else
-        @to_id = Owner.find(params[:to_id]).name
-        @house_id = Tenant.find(session[:user]).house_id
+      rescue ActiveRecord::RecordNotFound => e
+        redirect_to '/home'
+      end
+      
+    elsif session[:desig] == "Tenant"
+      begin
+        @from_id = Tenant.find(session[:user]).name
+        if params[:desig] == "Tenant"
+          @to_id = Tenant.find(params[:to_id]).name
+          @house_id = Tenant.find(params[:to_id]).house_id
+        
+        else
+          @to_id = Owner.find(params[:to_id]).name
+          @house_id = Tenant.find(session[:user]).house_id
+        end
+      rescue ActiveRecord::RecordNotFound => e
+        redirect_to '/home'
       end
     elsif session[:desig] == "Security"
-      @from_id = Security.find(session[:user]).name
-      @to_id = Tenant.find(params[:to_id]).name
-      @house_id = Tenant.find(params[:to_id]).house_id
+      begin
+        @from_id = Security.find(session[:user]).name
+        @to_id = Tenant.find(params[:to_id]).name
+        @house_id = Tenant.find(params[:to_id]).house_id
+      rescue ActiveRecord::RecordNotFound => e
+        redirect_to '/home'
+      end
     end
   end
 
@@ -71,27 +87,47 @@ class MessagesController < ApplicationController
   def create
     # debugger
     respond_to do |format|
-    if params["message_type"] == "emergency"
-      @house = Tenant.find(session[:user]).house_id
-      @block = House.find(@house).block_id
-      @apartment = Apartment.find(Block.find(@block).apartment_id)
-      # debugger
-      if @apartment.security == nil
-        format.html { redirect_to house_url(@house), notice: "Security not assigned! Contact neighbours  " }
+      if params["message_type"] == "emergency"
+        @house = Tenant.find(session[:user]).house_id
+        @block = House.find(@house).block_id
+        @apartment = Apartment.find(Block.find(@block).apartment_id)
+        # debugger
+        if @apartment.security == nil
+          format.html { redirect_to house_url(@house), notice: "Security not assigned! Contact neighbours  " }
+        else
+        @message = Message.new(from_id:session[:user], from_desig: "Tenant",to_id: @apartment.security.id, to_desig:"security", message:"Emergency!!!",status:false,message_type:"emergency", house_id:@house)
+        end
       else
-      @message = Message.new(from_id:session[:user], from_desig: "Tenant",to_id: @apartment.security.id, to_desig:"security", message:"Emergency!!!",status:false,message_type:"emergency", house_id:@house)
+        @message = Message.new(message_params)
       end
-    else
-      @message = Message.new(message_params)
-    end
-    
-
-   
-      if @message && @message.save
-          format.html { redirect_to house_path(@message.house_id), notice: "Message sent successfully " }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @message.errors, status: :unprocessable_entity }
+      
+      if @message
+        if @message.to_desig == "tenant"
+          begin
+            @user = Tenant.find(@message.to_id)
+          rescue ActiveRecord::RecordNotFound => e
+            redirect_to '/home'
+          end
+        elsif @message.to_desig == "owner"
+          begin
+              @user = Owner.find(@message.to_id)
+            rescue ActiveRecord::RecordNotFound => e
+              redirect_to '/home'
+            end
+        elsif @message.to_desig == "security"
+          begin
+              @user = Security.find(@message.to_id)
+            rescue ActiveRecord::RecordNotFound => e
+              redirect_to '/home'
+            end
+        end
+      end
+      if @user!=nil
+        if @message && @message.save
+          format.html { redirect_to "/home", notice: "Message sent successfully " }
+        else
+          format.html { redirect_to "/home", alert: "Message not sent " }
+        end
       end
     end
   end

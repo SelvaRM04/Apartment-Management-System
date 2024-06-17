@@ -4,10 +4,18 @@ class BlocksController < ApplicationController
   # GET /blocks or /blocks.json
   def index
     @blocks = Block.all
+    if session[:desig] != "Admin"
+      flash[:alert] = "Invalid request"
+      redirect_to "/home"
+    end
   end
 
   # GET /blocks/1 or /blocks/1.json
   def show
+    if session[:desig] != "Admin"
+      flash[:alert] = "Invalid request"
+      redirect_to "/home"
+    end
   end
 
   # GET /blocks/new

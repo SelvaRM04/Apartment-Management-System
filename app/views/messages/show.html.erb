@@ -1,7 +1,32 @@
+<% if session[:desig] == "Owner" %>
+  <body style="background-color: rgb(235, 171, 52)">
+<% elsif session[:desig] == "Tenant" %>
+  <body style="background-color: #61892F">
+<% elsif session[:desig] == "Security" %>
+  <body style="background-color: #5085A5">
+<% end %>
 <p style="color: green"><%= notice %></p>
 
-<%= render @message %>
 
-<div>
-  <%= link_to "Back", house_path(@house.id) %>
+<div style="display: flex;
+              justify-content: center;
+              align-items:center;
+              flex-wrap: wrap;
+              column-gap: 2rem;
+              flex: 1;
+              margin:0;
+              -webkit-transform: translateY(50%);
+              -ms-transform: translateY(25%);
+              transform: translateY(10%);">
+  <div class="container align-items-center py-auto " style="margin-top: auto; height: 500px;">
+    <%= render @message %>
+  
+
+  <div style="align-items:center" class="d-flex justify-content-around py-3 w-75 mx-auto mt-0">
+    <strong>
+      <%= link_to "Back", house_path(@message.house_id), class:"btn btn-dark" %>
+    </strong>
+  </div>
 </div>
+</div>
+</body>

@@ -22,7 +22,7 @@
   
     <% if params[:desig] == "owner" %>
       <div class="mb-4">
-        <%= form.submit "Login", class:"btn btn-warning border border-dark" %>
+        <%= form.submit "Login", class:"btn border border-dark", style:"background-color:rgb(235, 171, 52)" %>
       </div>
     <% elsif params[:desig] == "tenant" %>
       <div class="mb-4">
@@ -30,11 +30,11 @@
       </div>
     <% elsif params[:desig] == "security" %>
       <div class="mb-4">
-        <%= form.submit "Login", class:"btn btn-primary border border-dark" %>
+        <%= form.submit "Login", class:"btn border border-dark text text-white", style:"background-color:#5085A5" %>
       </div>
     <% elsif params[:desig] == "admin" %>
       <div class="mb-4">
-        <%= form.submit "Login", class:"btn btn-primary border border-dark" %>
+        <%= form.submit "Login", class:"btn border border-dark text text-white", style:"background-color: #C96567" %>
       </div>
     <% end %>
   <% end %>

@@ -1,14 +1,19 @@
 class SessionsController < ApplicationController
     def new
-        @desig = params[:desig]
-        if @desig == "owner"
-            @user = Owner.new
-        elsif @desig == "tenant"
-            @user = Tenant.new
-        elsif @desig == "security"
-            @user = Security.new
-        elsif @desig == "admin"
-            @user = Admin.new
+        if session[:user] && session[:desig]
+            flash[:alert] = "Invalid request"
+            redirect_to "/home"
+        else
+            @desig = params[:desig]
+            if @desig == "owner"
+                @user = Owner.new
+            elsif @desig == "tenant"
+                @user = Tenant.new
+            elsif @desig == "security"
+                @user = Security.new
+            elsif @desig == "admin"
+                @user = Admin.new
+            end
         end
     end
 

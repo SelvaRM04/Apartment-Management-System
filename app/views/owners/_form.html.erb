@@ -45,11 +45,11 @@
       <div>
         <% if !logged_in? %>
           <div class="mb-4">
-            <%= form.submit "Sign up", class:"btn btn-warning border border-dark" %>
+            <%= form.submit "Sign up", class:"btn border border-dark", style:"background-color:rgb(235, 171, 52)" %>
           </div>
         <% else %>
           <div class="mb-4">
-            <%= form.submit "Edit", class:"btn btn-warning border border-dark" %>
+            <%= form.submit "Edit", class:"btn border border-dark", style:"background-color: rgb(235, 171, 52)" %>
           </div>
         <% end %>
         

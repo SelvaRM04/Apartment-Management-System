@@ -1,12 +1,20 @@
-<div id="<%= dom_id tenant %>">
-  <p>
-    <strong>Name:</strong>
-    <%= tenant.name %>
-  </p>
 
-  <p>
-    <strong>Email:</strong>
-    <%= tenant.email %>
-  </p>
 
+<div class="container" >
+  <%if session[:desig] == "Tenant" %>
+    <div id="<%= dom_id tenant %>" class= "w-sm-100 w-xl-25 w-md-25 w-lg-25  p-2 mt-2 rounded border border-dark m-auto" style="background-color:rgb(255,244,120)">
+  <% elsif session[:desig] == "Admin" %>
+    <div id="<%= dom_id tenant %>" class= "w-sm-100 w-xl-25 w-md-25 w-lg-25  p-2 mt-2 rounded border border-dark m-auto" style="background-color: rgb(255, 212, 213)">
+  <% end %>
+    <p class="text-center">
+      <strong>Name:</strong>
+      <%= tenant.name %>
+    </p>
+
+    <p class="text-center">
+      <strong>Email:</strong>
+      <%= tenant.email %>
+    </p>
+
+  </div>
 </div>

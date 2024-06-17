@@ -1,6 +1,6 @@
-<body style="background-color: rgb(242,180,7);">
+<body style="background-color: rgb(235, 171, 52);">
 
-<% if notice!=nil %>
+  <% if notice!=nil %>
     <center>
       <p style="background-color: rgb(15, 247, 131); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(0,100,0); color: rgb(0,100,0)">
         <%= notice %>
@@ -31,7 +31,7 @@
   margin:0;
   -webkit-transform: translateY(25%);
   -ms-transform: translateY(25%);
-  transform: translateY(25%);">
+  transform: translateY(10%);">
 <div style="width: max(20vw, 300px);" class="my-5">
 <div class="d-flex justify-content-center h1 text-dark">Edit</div>
 <div class="d-flex justify-content-center">
@@ -46,8 +46,8 @@
 
 <div style="align-items:center" class="d-flex justify-content-around py-3 w-75 mx-auto">
 <strong>
-          <%= link_to "Back", "/home", class:"btn btn-dark" %>
-        </strong>
+  <%= link_to "Back", "/home", class:"btn btn-dark" %>
+</strong>
 </div>
 </div>
 </div>

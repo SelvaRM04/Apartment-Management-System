@@ -5,10 +5,13 @@ class HousesController < ApplicationController
   # GET /houses or /houses.json
   def index
     @houses = House.all
+      flash[:alert] = "Unauthorized request"
+      redirect_to "/home"
   end
 
   # GET /houses/1 or /houses/1.json
   def show
+    
     if session[:desig] == "Owner"
       if @house.owner_id != session[:user]
         flash[:alert] = "Unauthorized request"
@@ -21,6 +24,7 @@ class HousesController < ApplicationController
           end
         end
         @messages = @messages_owner
+
       end
 
     elsif session[:desig] == "Security"

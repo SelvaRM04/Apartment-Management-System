@@ -83,11 +83,11 @@
   <div>
     <% if !logged_in? %>
       <div class="mb-4">
-        <%= form.submit "Sign up", class:"btn btn-success border border-dark" %>
+        <%= form.submit "Sign up", class:"btn border border-dark text text-white", style:"background-color:#61892F;" %>
       </div>
     <% else %>
       <div class="mb-4" >
-        <%= form.submit "Edit", class:"btn btn-success border border-dark" %>
+        <%= form.submit "Edit", class:"btn border border-dark text text-white", style:"background-color:#61892F;" %>
       </div>
     <% end %>
   </div>

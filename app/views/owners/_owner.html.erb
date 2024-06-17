@@ -1,5 +1,9 @@
 <div class="container" >
-  <div id="<%= dom_id owner %>" class= "w-sm-100 w-xl-25 w-md-25 w-lg-25  p-2 mt-2 rounded border border-dark m-auto" style="background-color:rgb(255,244,120)">
+  <%if session[:desig] == "Owner" %>
+    <div id="<%= dom_id owner %>" class= "w-sm-100 w-xl-25 w-md-25 w-lg-25  p-2 mt-2 rounded border border-dark m-auto" style="background-color:rgb(255,244,120)">
+  <% elsif session[:desig] == "Admin" %>
+    <div id="<%= dom_id owner %>" class= "w-sm-100 w-xl-25 w-md-25 w-lg-25  p-2 mt-2 rounded border border-dark m-auto" style="background-color: rgb(255, 212, 213)">
+  <% end %>
     <p class="text-center">
       <strong>Name:</strong>
       <%= owner.name %>
@@ -10,5 +14,15 @@
       <%= owner.email %>
     </p>
 
+    <p class="text-center">
+      <strong>No. of houses:</strong>
+      <%= owner.houses.length %>
+    </p>
+
+    <% if session[:desig] == "Admin" %>
+      <center>
+      <%= button_to "Delete", owner, method: :delete , data: { turbo_confirm: "Are you sure?" }, class:"btn text text-white bordre border-dark", style:"background-color:#C96567"%>
+      </center>
+    <% end %>
   </div>
 </div>

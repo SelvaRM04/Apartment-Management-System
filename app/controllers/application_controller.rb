@@ -5,13 +5,41 @@ class ApplicationController < ActionController::Base
     def current_user
         if session[:desig]
             if session[:desig] == "Tenant"
-                @current_user = Tenant.find(session[:user])
+                begin
+                    @current_user = Tenant.find(session[:user])
+                  rescue ActiveRecord::RecordNotFound => e
+                    session[:user] = nil
+                    session[:desig] = nil
+                    flash[:alert] = "User has been deleted"
+                    redirect_to '/home'
+                  end
             elsif session[:desig] == "Owner"
-                @current_user = Owner.find(session[:user])
+                begin
+                    @current_user = Owner.find(session[:user])
+                  rescue ActiveRecord::RecordNotFound => e
+                    session[:user] = nil
+                    session[:desig] = nil
+                    flash[:alert] = "User has been deleted"
+                    redirect_to '/home'
+                  end
             elsif session[:desig] == "Security"
-                @current_user = Security.find(session[:user])
+                begin
+                    @current_user = Security.find(session[:user])
+                  rescue ActiveRecord::RecordNotFound => e
+                    session[:user] = nil
+                    session[:desig] = nil
+                    flash[:alert] = "User has been deleted"
+                    redirect_to '/home'
+                  end
             elsif session[:desig] == "Admin"
-                @current_user = Admin.find(session[:user])
+                begin
+                    @current_user = Admin.find(session[:user])
+                  rescue ActiveRecord::RecordNotFound => e
+                    session[:user] = nil
+                    session[:desig] = nil
+                    flash[:alert] = "User has been deleted"
+                    redirect_to '/home'
+                  end
             end
         end
     end

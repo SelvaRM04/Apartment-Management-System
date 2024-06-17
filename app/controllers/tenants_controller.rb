@@ -30,10 +30,15 @@ class TenantsController < ApplicationController
 
   # GET /tenants/new
   def new
-    if params[:tenant] != nil
-      @tenant = Tenant.new(email:params[:tenant][:email], name:params[:tenant][:name], password:params[:tenant][:password])
+    if session[:user] && session[:desig]
+      flash[:alert] = "Logout first!"
+      redirect_to "/home"
     else
-      @tenant = Tenant.new
+      if params[:tenant] != nil
+        @tenant = Tenant.new(email:params[:tenant][:email], name:params[:tenant][:name], password:params[:tenant][:password])
+      else
+        @tenant = Tenant.new
+      end
     end
   end
 
@@ -66,7 +71,6 @@ class TenantsController < ApplicationController
           @h = House.where(doorno: params[:tenant]["doorno"],block_id: block.id)
           @h = @h[0]
           #  # debugger
-          
           if @h && @h.tenant == nil
             if Tenant.find_by(name:@tenant.name) != nil
               format.html { redirect_to new_tenant_path, alert: "Name has already taken" }
@@ -79,14 +83,13 @@ class TenantsController < ApplicationController
               if @h.save
                 session[:user] = @h.tenant.id
                 session[:desig] = "Tenant"
-                debugger
                 format.html { redirect_to "/home", notice: "Tenant was successfully created." }
               else
                 format.html { redirect_to new_tenant_path, alert: "Invalid! Try again" }
               end
             end
           else
-            format.html { redirect_to new_tenant_path, alert: "Invalid! House is occupied already" }
+            format.html { redirect_to new_tenant_path, alert: "Invalid House" }
           end
         
         end

@@ -25,27 +25,60 @@ class SecuritiesController < ApplicationController
     else
       @messages = Message.where(from_id: session[:user]).or(Message.where(to_id: session[:user])).order(created_at: :desc)
       @messages_unread_count = 0
+      
       @messages.each do |message|
         if message.status == false
           @messages_unread_count+=1
         end
       end
+      
       @security = Security.find(session[:user])
       @blocks = Block.where(apartment_id: @security.apartment_id)
       @houses = []
+      
       @blocks.each do |block|
         @houses << House.where(block_id: block.id)
       end
+
+      @houses = @houses.flatten
+
+      @msg_house = []
+      @rem_house = []
+
+      @houses.each do |house|
+        flag = 0
+        house.messages.each do |msg|
+          if msg.message_type == "emergency" && msg.status == false
+            flag = 1
+            break
+          end
+        end
+        if flag == 1
+          @msg_house << house
+        else
+          @rem_house << house
+        end
+      end
+
+      @houses = []
+      @houses << @msg_house
+      @houses << @rem_house
+
       @houses = @houses.flatten
     end
   end
 
   # GET /securities/new
   def new
-    if params[:owner] != nil
-      @security = Security.new(email:params[:security][:email], name:params[:security][:name], password:params[:security][:password])
+    if session[:user] && session[:desig]
+      flash[:alert] = "Logout first!"
+      redirect_to "/home"
     else
-      @security = Security.new
+      if params[:owner] != nil
+        @security = Security.new(email:params[:security][:email], name:params[:security][:name], password:params[:security][:password])
+      else
+        @security = Security.new
+      end
     end
   end
 
@@ -69,7 +102,8 @@ class SecuritiesController < ApplicationController
     respond_to do |format|
       if @existing == nil
         format.html { redirect_to new_security_path, notice: "Invalid Security email ID" }
-        
+      elsif @existing.name != nil
+        format.html { redirect_to new_security_path, alert: "Security already exists" }
       else
         @existing.name = params["security"]["name"]
         @existing.password = params["security"]["password"]
@@ -101,7 +135,7 @@ class SecuritiesController < ApplicationController
           format.html { redirect_to "/edit", alert: "Incorrect Password entered" }
         end
       else
-        if @owner.update(name: @updated_values[:name],email: @updated_values[:email])
+        if @security.update(name: @updated_values[:name],email: @updated_values[:email])
           format.html { redirect_to "/home", notice: "Security was successfully updated." }
         else
           format.html { redirect_to "/edit", alert: @security.errors.full_messages[0] }
@@ -112,10 +146,13 @@ class SecuritiesController < ApplicationController
 
   # DELETE /securities/1 or /securities/1.json
   def destroy
+    Message.where(from_id: @security.id, from_desig:"Security").destroy_all
+    Message.where(to_id: @security.id, to_desig:"security").destroy_all
+
     @security.destroy!
 
     respond_to do |format|
-      format.html { redirect_to securities_url, notice: "Security was successfully destroyed." }
+      format.html { redirect_to root_path, notice: "Security was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -136,6 +173,6 @@ class SecuritiesController < ApplicationController
     end
 
     def edit_params
-      params.require(:security).permit(:name, :password, :new_password)
+      params.require(:security).permit(:name, :email, :password, :new_password)
     end
 end

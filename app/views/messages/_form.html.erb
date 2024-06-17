@@ -1,48 +1,40 @@
-<body style="background-color: rgb(242,180,7);">
 <%= form_with(model: message, method: :post, data: { params: { house_id: @house_id } }) do |form| %>
-  <% if message.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(message.errors.count, "error") %> prohibited this message from being saved:</h2>
-
-      <ul>
-        <% message.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
+  <% if session[:desig] == "Owner" %>
+    <div class="text-center align-items-center border border-dark ", style=" background-color: rgb(255,244,120); ">
+  <% elsif session[:desig] == "Tenant" %>
+    <div class="text-center align-items-center border border-dark", style="background-color: rgb(200, 252, 151);"> 
+  <% elsif session[:desig] == "Security" %>
+    <div class="text-center align-items-center border border-dark", style="background-color: rgb(212, 227, 255);">
   <% end %>
-
-  <% if session[:desig] == "Owner" || session[:desig] == "Security" || session[:desig] == "Tenant" %>
-  <div class="container text-center align-items-center border border-dark", style=" width :400px ;background-color: rgb(255,244,120); margin-left:720px;margin-top:50px;padding-left:35px;padding:30px; position:relative">
-  <% end %>
-  <div class="form-group my-3">
-    <strong><%= form.label "From", style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>
-    <%= form.text_field :from, :disabled => true, value: @from_id,  class:"form-control w-75 mb-2 border border-dark" %>
+  
+  <div class="form-group mt-5">
+    <div class="d-flex justify-content-center"><strong><%= form.label "From", style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong></div>
+    <div class="d-flex justify-content-center"><%= form.text_field :from, :disabled => true, value: @from_id,  class:"form-control w-75 mb-2 border border-dark" %></div>
   </div>
 
   <div class="form-group my-3">
-    <strong><%= form.label :to, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>
-    <%= form.text_field :to, :disabled => true, value: @to_id , class:"form-control w-75 mb-2 border border-dark" %>
+    <div class="d-flex justify-content-center"><strong><%= form.label :to, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong></div>
+    <div class="d-flex justify-content-center"><%= form.text_field :to, :disabled => true, value: @to_id , class:"form-control w-75 mb-2 border border-dark" %></div>
   </div>
 
   <% if session[:desig] == "Tenant" and params[:desig] == "owner" %>
-  <div class="form-group my-3">
-    <strong><%= form.label :image, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>
-    <%= form.file_field :image %>
-  </div>
+    <div class="form-group my-3">
+      <div class="d-flex justify-content-center"><strong><%= form.label :image, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong></div>
+      <div class="d-flex justify-content-center"><%= form.file_field :image %></div>
+    </div>
   <% end %>
 
   <div class="form-group my-3">
-    <strong><%= form.label :message, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>
+    <div class="d-flex justify-content-center"><strong><%= form.label :message, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong></div>
     <% if session[:desig] == "Owner" and params[:desig] == "tenant" %>
     <%= form.hidden_field :message_type, value: "rent" %>
-    <%= form.text_area :message, size: "30x5", style: "resize:none", value:"Kindly pay the rent for this month" , class:"form-control mb-2 border border-dark" %>
+    <div class="d-flex justify-content-center"><%= form.text_area :message, size: "30x5", style: "resize:none", value:"Kindly pay the rent for this month" , class:"form-control mb-2 border border-dark w-75" %></div>
     <% elsif session[:desig] == "Security" and params[:desig] == "tenant"%>
     <%= form.hidden_field :message_type, value: "approval" %>
-    <%= form.text_area :message, size: "30x5", style: "resize:none", value:"There is a delivery for you at the gate. Please approve to get delivery."  , class:"form-control mb-2 border border-dark" %>
+    <div class="d-flex justify-content-center"><%= form.text_area :message, size: "20x5", style: "resize:none", value:"There is a delivery for you at the gate. Please approve to get delivery."  , class:"form-control mb-2 border border-dark w-75" %></div>
     <% else %>
     <%= form.hidden_field :message_type, value: "general" %>
-    <%= form.text_area :message, size: "30x5", style: "resize:none" , class:"form-control mb-2 border border-dark" %>
+    <div class="d-flex justify-content-center"><%= form.text_area :message, size: "30x5", style: "resize:none" , class:"form-control mb-2 border border-dark w-75" %></div>
     <% end %>
   </div>
 
@@ -50,10 +42,20 @@
   <%= form.hidden_field :to_desig, value: params[:desig] %>
   <%= form.hidden_field :house_id, value: @house_id %>
 
-  <div>
-    <%= form.submit "Send", class:"btn btn-warning border border-dark" %>
-  </div>
-  </div>
+  <% if session[:desig] == "Owner" %>
+      <div class="mb-4">
+        <%= form.submit "Send", class:"btn border border-dark", style:"background-color:rgb(235, 171, 52)" %>
+      </div>
+    <% elsif session[:desig] == "Tenant" %>
+      <div class="mb-4">
+        <%= form.submit "Send", class:"btn btn-success border border-dark", style:"background-color:#61892F"  %>
+      </div>
+    <% elsif session[:desig] == "Security" %>
+      <div class="mb-4">
+        <%= form.submit "Send", class:"btn btn-primary border border-dark", style:"background-color:#5085A5"  %>
+      </div>
+    <% end %>
+  
 <% end %>
 
-</body>
+</div>

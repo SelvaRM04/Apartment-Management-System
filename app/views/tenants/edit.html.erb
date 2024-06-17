@@ -1,4 +1,4 @@
-<body style="background-color: rgb(242,180,7);">
+<body style="background-color: #61892F;">
 
 <% if notice!=nil %>
     <center>
@@ -22,9 +22,35 @@
     </center>
   <% end %>
 
-<h1 style="position:fixed;top:200px;left:200px">Edit<%= image_tag("tenant.png") %></h1>
+  <div style="display: flex;
+  justify-content: center;
+  align-items:center;
+  flex-wrap: wrap;
+  column-gap: 2rem;
+  flex: 1;
+  margin:0;
+  -webkit-transform: translateY(25%);
+  -ms-transform: translateY(25%);
+  transform: translateY(10%);">
+<div style="width: max(20vw, 300px);" class="my-5">
+<div class="d-flex justify-content-center h1 text-dark">Edit</div>
+<div class="d-flex justify-content-center">
+<%= image_tag("tenant.png") %>
+</div>
+</div>
 
+<div style="width: max(20vw, 420px);">
+<div>
 <%= render "form", tenant: @tenant %>
+</div>
+<div style="align-items:center" class="d-flex justify-content-around py-3 w-75 mx-auto">
+<strong>
+  <%= link_to "Back", "/home", class:"btn btn-dark" %>
+</strong>
+</div>
+</div>
+</div>
 
 <br>
+</body>
 

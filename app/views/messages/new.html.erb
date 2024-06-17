@@ -1,18 +1,78 @@
 <% if session[:desig] == "Owner" %>
-  <h1 style="position:fixed;top:200px;left:200px">Rent<%= image_tag("rent.png") %></h1>
+  <body style="background-color: rgb(235, 171, 52)">
 <% elsif session[:desig] == "Security" %>
-  <h1 style="position:fixed;top:200px;left:200px">Approval<%= image_tag("approval.png", size:"260x260") %></h1>
+  <body style="background-color: #5085A5">
 <% elsif session[:desig] == "Tenant" %>
-  <h1 style="position:fixed;top:200px;left:200px">Message<%= image_tag("message.png", size:"260x260") %></h1>
+  <body style="background-color: #61892F">
+<% elsif session[:desig] == "Admin" %>
+  <body style="background-color: #C96567">
 <% end %>
-<%= render "form", message: @message %>
 
-<br>
+  <% if notice!=nil %>
+    <center>
+      <p style="background-color: rgb(15, 247, 131); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(0,100,0); color: rgb(0,100,0)">
+        <%= notice %>
+        <a href="" >
+          <i style="position:absolute; top:10px;right:10px;color:rgb(0,100,0)" class="fa fa-close "></i>
+        </a>
+      </p>
+    </center>
+  <% end %>
 
-<% if session[:desig] == "Owner" || session[:desig] == "Security" || session[:desig] == "Tenant" %>
+  <% if alert!=nil %>
+    <center>
+      <p style="background-color: rgb(247, 198, 198); position:relative;width:50%;height:40px;padding-top:7px; border-radius: 5px; border: 1px solid rgb(168, 25, 25); color: rgb(168, 25, 25)">
+        <%= alert %>
+        <a href="" >
+          <i style="position:absolute; top:10px;right:10px; color:rgb(168, 25, 25)" class="fa fa-close "></i>
+        </a>
+      </p>
+    </center>
+  <% end %>
+  <br>
 
+  <div style="display: flex;
+              justify-content: center;
+              align-items:center;
+              flex-wrap: wrap;
+              column-gap: 2rem;
+              flex: 1;
+              margin:0;
+              -webkit-transform: translateY(25%);
+              -ms-transform: translateY(50%);
+              transform: translateY(0%);">
+    <div style="width: max(20vw, 300px);" class="my-5">
+      <% if session[:desig] == "Owner" %>
+        <div class="d-flex justify-content-center h1 text-dark">Rent</div>
+        <div class="d-flex justify-content-center">
+          <%= image_tag("rent.png") %>
+        </div>
+      <% elsif session[:desig] == "Tenant" %>
+        <div class="d-flex justify-content-center h1 text-dark">Message</div>
+        <div class="d-flex justify-content-center">
+          <%= image_tag("message.png", size:"300x300") %>
+        </div>
+      <% elsif session[:desig] == "Security" %>
+        <div class="d-flex justify-content-center h1 text-dark">Approval</div>
+        <div class="d-flex justify-content-center">
+          <%= image_tag("approval.png", size:"300x300") %>
+        </div>
+      <% end %>
+    </div>
 
-<div style="margin-left:890px">
-    <strong><%= link_to "Back", root_path, class:"btn btn-primary" %></strong>
+    <div style="width: max(20vw, 420px);">
+      <div>
+        <%= render "form", message: @message %>
+      </div>
+
+      <div style="align-items:center" class="d-flex justify-content-around py-3 w-75 mx-auto">
+        <strong>
+          <%= link_to "Back", "/home", class:"btn btn-dark" %>
+        </strong>
+      </div>
+    </div>
   </div>
-<% end %>
+<br>
+</body>
+
+

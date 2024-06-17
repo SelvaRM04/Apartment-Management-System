@@ -4,10 +4,18 @@ class ApartmentsController < ApplicationController
   # GET /apartments or /apartments.json
   def index
     @apartments = Apartment.all
+    if session[:desig] != "Admin"
+      flash[:alert] = "Invalid request"
+      redirect_to "/home"
+    end
   end
 
   # GET /apartments/1 or /apartments/1.json
   def show
+    if session[:desig] != "Admin"
+      flash[:alert] = "Invalid request"
+      redirect_to "/home"
+    end
   end
 
   # GET /apartments/new

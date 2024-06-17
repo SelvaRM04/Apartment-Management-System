@@ -16,30 +16,65 @@ class OwnersController < ApplicationController
 
   # GET /owners/1 or /owners/1.json
   def show
-    if params[:id]
-      if params[:id].to_i != session[:user] || session[:desig] != "Owner"
-        flash[:alert] = "Invalid request"
-      end
-      redirect_to "/home", :id => session[:user]
+    if session[:desig] == "Admin"
+      @owner = Owner.find(params[:id])
+      @houses = House.where(owner_id: params[:id])
     else
-      @messages = Message.where(from_id: session[:user]).or(Message.where(to_id: session[:user])).order(created_at: :desc)
-      @messages_unread_count = 0
-      @messages.each do |message|
-        if message.status == false
-          @messages_unread_count+=1
+      if params[:id]
+        if ( params[:id].to_i != session[:user] ||  session[:desig] != "Owner" )
+          flash[:alert] = "Invalid request"
+        end
+        redirect_to "/home", :id => session[:user]
+      else
+        @messages = Message.where(from_id: session[:user]).or(Message.where(to_id: session[:user])).order(created_at: :desc)
+        @messages_unread_count = 0
+        @messages.each do |message|
+          if message.status == false
+            @messages_unread_count+=1
+          end
+        end
+        @owner = Owner.find(session[:user])
+        @houses = House.where(owner_id: session[:user])
+
+        @msg_house = []
+      @rem_house = []
+
+      @houses.each do |house|
+        flag = 0
+        house.messages.each do |msg|
+          if msg.status == false
+            flag = 1
+            break
+          end
+        end
+        if flag == 1
+          @msg_house << house
+        else
+          @rem_house << house
         end
       end
-      @owner = Owner.find(session[:user])
-      @houses = House.where(owner_id: session[:user])
+
+      @houses = []
+      @houses << @msg_house
+      @houses << @rem_house
+
+      @houses = @houses.flatten
+
+      end
     end
   end
 
   # GET /owners/new
   def new
-    if params[:owner] != nil
-      @owner = Owner.new(email:params[:owner][:email], name:params[:owner][:name], password:params[:owner][:password])
+    if session[:user] && session[:desig]
+      flash[:alert] = "Invalid request"
+      redirect_to "/home"
     else
-      @owner = Owner.new
+      if params[:owner] != nil
+        @owner = Owner.new(email:params[:owner][:email], name:params[:owner][:name], password:params[:owner][:password])
+      else
+        @owner = Owner.new
+      end
     end
   end
 
