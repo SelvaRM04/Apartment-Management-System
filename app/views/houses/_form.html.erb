@@ -1,6 +1,8 @@
 <%= form_with(url: add_house_path, method: :post) do |form| %>
 
-  <div class="text-center align-items-center border border-dark", style=" background-color: rgb(255,244,120)">
+  <% if session[:desig] == "Admin" %>
+  <div class="text-center align-items-center border border-dark", style=" background-color:rgb(255, 212, 213) ">
+  
     <div class="form-group my-3">
       <div class="d-flex justify-content-center"><strong><%= form.label :apartment, style: "display: block",class:"control-label col-sm-2 p-2" %></div>
       <div class="d-flex justify-content-center"> <%= form.text_field :apartment, placeholder: "Enter apartment name" , class:"form-control w-75 mb-2 border border-dark",  :required => true %></div>
@@ -21,10 +23,51 @@
         <%= form.text_field :doorno, placeholder: "Enter door number" , class:"form-control w-75 mb-2 border border-dark",  :required => true %>
       </div>
     </div>
+    <div class="mb-4">
+        <%= button_to "Add", add_house_path, method: :post, class:"btn border border-dark text text-white", style:"background-color:#C96567" %>
+      </div>
+</div>
+    <% else %>
+  <div class="text-center align-items-center border border-dark", style=" background-color: rgb(255,244,120)">
+    <div class="form-group my-3">
+      <div class="d-flex justify-content-center">
+        <strong><%= form.label :apartment, style: "display: block" , class:"control-label mb-2 col-sm-2"%></strong>       
+      </div>
+      <div class="d-flex justify-content-center">
+        <%= form.select :apartment, Apartment.all.collect { |p| [ p.name, p.name ] },{:prompt => 'Select Apartment'}, class: "form-control w-75 mb-2 border border-dark" %>
+      </div>
+    </div>
 
+    <div class="form-group my-3">
+      <div class="d-flex justify-content-center">
+        <strong>
+          <%= form.label :block, style: "display: block" , class:"control-label mb-2 col-sm-2"%>
+        </strong>       
+      </div>
+      <div class="d-flex justify-content-center">
+        <%= form.select :block, Block.group(:name).collect { |p| [ p.name, p.name ] },{:prompt => 'Select Block'}, class: "form-control w-75 mb-2 border border-dark" %>
+      </div>
+    </div>
+
+    <div class="form-group my-3">
+      <div class="d-flex justify-content-center">
+        <strong>
+          <%= form.label :doorno, style: "display: block" , class:"control-label mb-2 col-sm-2"%>
+        </strong> 
+      </div> 
+      
+      <div class="d-flex justify-content-center">
+        <%= form.select :doorno, House.group(:doorno).collect { |p| [ p.doorno, p.doorno ] },{:prompt => 'Select Doorno'}, class: "form-control w-75 mb-2 border border-dark" %>
+      </div>
+    </div>
+    
     <div class="mb-4">
       <%= button_to "Add", add_house_path, method: :post, class:"btn border border-dark", style:"background-color:rgb(235, 171, 52)" %>
     </div>
+  </div>
+   
+      
+    <% end %>
   </div>
 
 <% end %>

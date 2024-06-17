@@ -63,7 +63,7 @@ class HousesController < ApplicationController
 
   # GET /houses/new
   def new
-    if session[:desig] != "Owner"
+    if session[:desig] != "Owner" and session[:desig] != "Admin"
       flash[:alert] = "Invalid request"
       redirect_to "/home"
     else
@@ -79,6 +79,7 @@ class HousesController < ApplicationController
   def create
     flag=0
     owner=0
+    @h = nil
     @house = house_params
     @existing_houses = House.where(doorno:@house[:doorno])
     if @existing_houses
@@ -89,59 +90,82 @@ class HousesController < ApplicationController
           @existing_blocks << block
         end
       end
-
       if @existing_blocks.length > 0
         @existing_blocks.each do |block|
           apartment = Apartment.find(block.apartment_id)
           if apartment.name == @house[:apartment]
-            flag = 1
+            if session[:desig] == "Admin"
+              flag = 1
+            elsif session[:desig] == "Owner"
+              apartment.blocks.each do |block|
+                if block.name == @house[:block]
+                  block.houses.each do |house|
+                    if house.doorno == @house[:doorno] && house.owner_id==nil
+                      flag=1
+                      @h = house
+                    end
+                  end
+                end
+              end
+            end
           end
         end
       end
     end
 
     respond_to do |format|
-
-      if flag==0
-        house = House.new(doorno: @house[:doorno])
-        
-        blockname = nil
-        apartment = Apartment.find_by(name: @house[:apartment])
-        if apartment==nil
-          apartment = Apartment.new(name: @house[:apartment])
-        else
-          apartment.blocks.each do |block|
-            if block.name == @house[:block]
-              blockname = block
-              break
+      if session[:desig] == "Admin"
+        if flag==0
+          house = House.new(doorno: @house[:doorno])
+          
+          blockname = nil
+          apartment = Apartment.find_by(name: @house[:apartment])
+          if apartment==nil
+            apartment = Apartment.new(name: @house[:apartment])
+          else
+            apartment.blocks.each do |block|
+              if block.name == @house[:block]
+                blockname = block
+                break
+              end
             end
           end
-        end
-        if blockname == nil
-          blockname = Block.new(name: @house[:block])
-        end
+          if blockname == nil
+            blockname = Block.new(name: @house[:block])
+          end
           blockname.houses << house
-        apartment.blocks << blockname
-        apartment.save
-        @owner = Owner.find(session[:user])
-        @owner.houses << house
-        @owner.save
-        format.html { redirect_to "/home", notice: "House was successfully added." }
-        
-      # else
-      #   flash[:alert] = ["House belongs to another owner"]
-      #   redirect_to :new_house_path
-      # else
-      #   flash[:notice] = "House belongs to another owner"
-      #   format.html { redirect_to new_house_path, status: :unprocessable_entity }
-      #   format.json { render json: flash[:notice], status: :unprocessable_entity }
-      # end
-      else
+          apartment.blocks << blockname
+          apartment.save
+          
+          format.html { redirect_to "/home", notice: "House was successfully added." }
+          
+        # else
+        #   flash[:alert] = ["House belongs to another owner"]
+        #   redirect_to :new_house_path
+        # else
         #   flash[:notice] = "House belongs to another owner"
-        # format.html { render new_house_path, status: :unprocessable_entity, notice: "House belongs to another owner" }
+        #   format.html { redirect_to new_house_path, status: :unprocessable_entity }
+        #   format.json { render json: flash[:notice], status: :unprocessable_entity }
+        # end
+        else
+          #   flash[:notice] = "House belongs to another owner"
+          # format.html { render new_house_path, status: :unprocessable_entity, notice: "House belongs to another owner" }
+          
+            format.html { redirect_to new_house_url, alert: "House already exists." }
         
-          format.html { redirect_to new_house_url(@owner), alert: "House already exists." }
-      
+        end
+      elsif session[:desig] == "Owner"
+        if flag==1
+          o = Owner.find(session[:user])
+          o.houses << @h
+          if o.save
+            format.html { redirect_to "/home", notice: "House was successfully added." }
+          else
+            format.html { redirect_to new_house_url, alert: o.errors.full_messaes[0] }
+          end
+        else
+          format.html { redirect_to new_house_url, alert: "Invalid House " }
+        end
       end
     end
   end

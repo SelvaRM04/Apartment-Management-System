@@ -1,5 +1,5 @@
 
-<% @owner = Owner.find(house.owner_id) %>
+<% @owner = Owner.find(house.owner_id) if house.owner_id!=nil %>
   
 <div id="<%= dom_id house %>">
   
@@ -32,7 +32,7 @@
         <%= house.doorno %>
       </p>
 
-      <% if session[:desig] != "Owner" %>
+      <% if session[:desig] != "Owner" && house.owner_id!=nil %>
         <p>
           <strong>Owner:</strong>
           <%= Owner.find(house.owner_id).name %>
@@ -66,7 +66,7 @@
         <% end %>
       <% end %>
       
-      <% if session[:desig] == "Admin" && params["type"] != "show" %>
+      <% if session[:desig] == "Admin" && params["type"] != "show" && house.owner_id!=nil%>
       <div class="d-flex justify-content-left"><div class="w-25"><%= link_to "View Owner", owner_path(@owner,:type => "show"), class:"btn text text-white border border-dark", style:"background-color:#C96567" %></div>
       <div class="d-flex justify-content-left"><div class="w-100"><%= button_to "Delete House", house, method: :delete , data: { turbo_confirm: "Are you sure?" }, class:"btn text text-white bordre border-dark", style:"margin-right:40px; background-color:#C96567"%></div>
       <% end %>

@@ -1,5 +1,8 @@
-<body style="background-color: rgb(235, 171, 52)">
- 
+<% if session[:desig] == "Owner" %>
+  <body style="background-color: rgb(235, 171, 52)">
+<% elsif session[:desig] == "Admin" %>
+  <body style="background-color: #C96567">
+<% end %> 
 
   <% if notice!=nil %>
     <center>
@@ -48,12 +51,14 @@
       <br>
 
 
-      <div style="align-items:center" class="d-flex justify-content-around py-3 w-75 mx-auto mt-0">
+      
+    </div>
+    
+  </div>
+  <div style="align-items:center" class="d-flex justify-content-around py-5 w-75 mx-auto mt-0">
         <strong>
           <%= link_to "Back", "/home", class:"btn btn-dark" %>
         </strong>
       </div>
-    </div>
-  </div>
   <br>
 </body>

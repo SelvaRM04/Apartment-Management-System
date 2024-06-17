@@ -181,11 +181,7 @@ class OwnersController < ApplicationController
           blockname.houses << house
         apartment.blocks << blockname
         apartment.save
-        @owner = Owner.find(session[:user])
-        @owner.houses << house
-        @owner.save
-        format.html { redirect_to owner_url(@owner), notice: "House was successfully added." }
-        format.json { render :show, status: :ok, location: @owner }
+        format.html { redirect_to "/home", notice: "House was successfully added." }
       # else
       #   flash[:alert] = ["House belongs to another owner"]
       #   redirect_to :new_house_path
@@ -198,9 +194,9 @@ class OwnersController < ApplicationController
         #   flash[:notice] = "House belongs to another owner"
         # format.html { render new_house_path, status: :unprocessable_entity, notice: "House belongs to another owner" }
         if owner == 1
-          format.html { redirect_to new_house_url(@owner), notice: "House already added to you." }
+          format.html { redirect_to new_house_url, alert: "House already added to you." }
         else
-          format.html { redirect_to new_house_url(@owner), notice: "House belongs to another owner." }
+          format.html { redirect_to new_house_url, alert: "House belongs to another owner." }
         end
       end
     end
