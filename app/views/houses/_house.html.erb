@@ -32,10 +32,14 @@
         <%= house.doorno %>
       </p>
 
-      <% if session[:desig] != "Owner" && house.owner_id!=nil %>
+      <% if session[:desig] != "Owner"%>
         <p>
           <strong>Owner:</strong>
-          <%= Owner.find(house.owner_id).name %>
+          <% if house.owner_id!=nil %>
+            <%= Owner.find(house.owner_id).name %>
+          <% else %>
+            Not Signed up
+          <% end %>
         </p>
       <% end %>
 
@@ -67,8 +71,8 @@
       <% end %>
       
       <% if session[:desig] == "Admin" && params["type"] != "show" && house.owner_id!=nil%>
-      <div class="d-flex justify-content-left"><div class="w-25"><%= link_to "View Owner", owner_path(@owner,:type => "show"), class:"btn text text-white border border-dark", style:"background-color:#C96567" %></div>
-      <div class="d-flex justify-content-left"><div class="w-100"><%= button_to "Delete House", house, method: :delete , data: { turbo_confirm: "Are you sure?" }, class:"btn text text-white bordre border-dark", style:"margin-right:40px; background-color:#C96567"%></div>
+      <div class="d-flex justify-content-left"><div class="w-25"><%= link_to "View Owner", owner_path(@owner,:type => "show"), class:"btn text text-white border border-dark btn btn-dark" %></div>
+      <div class="d-flex justify-content-left"><div class="w-100"><%= button_to "Delete House", house, method: :delete , data: { turbo_confirm: "Are you sure?" }, class:"btn btn-dark text text-white bordre border-dark", style:"margin-right:40px"%></div>
       <% end %>
       </div>
       

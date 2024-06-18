@@ -23,10 +23,31 @@
   <br>
 
 
-<%= button_to "Owner", login_path("owner"), method: :get, class:"btn btn-lg mb-2", style:"background-color:rgb(235, 171, 52)" %>
+  <div style="height:400px">
+  <div class="d-flex h-75">
+<div style="width:50%;height:100%;align-items:center;border-right: 1px solid #808080", class="d-flex justify-content-center w-50"><div>Are you owner? Login here ! &nbsp;</div><div><%= button_to "Owner", login_path("owner"), method: :get, class:"btn btn-lg mb-2 border border-dark", style:"background-color:rgb(235, 171, 52)" %></div>
+<div class="d-flex justify-content-center">
+        <%= image_tag("owner.png") %>
+      </div>
+</div>
     
-<%= button_to "Tenant", login_path("tenant"), method: :get, class:"btn btn-success btn-lg my-2" %> 
-    
-<%= button_to "Security", login_path("security"), method: :get, class:"btn btn-info btn-lg my-2" %> 
+<div style="width:50%;height:100%;align-items:center;border-bottom: 1px solid #808080", class="d-flex justify-content-center w-50"><div>Are you tenant? Login here ! &nbsp;</div><div><%= button_to "Tenant", login_path("tenant"), method: :get, class:"btn btn-success btn-lg my-2 border border-dark" %></div>
+<div class="d-flex justify-content-center">
+        <%= image_tag("tenant.png") %>
+      </div>
+</div>
+   </div>
+   <div class="d-flex h-75"> 
+   <div style="width:50%;height:100%;align-items:center;border-top: 1px solid #808080", class="d-flex justify-content-center w-50"><div>Are you security? Login here ! &nbsp;</div><div><%= button_to "Security", login_path("security"), method: :get, class:"btn btn-info btn-lg my-2 border border-dark"%></div>
+   <div class="d-flex justify-content-center">
+        <%= image_tag("security.png") %>
+      </div>
+   </div>
 
-<%= button_to "Admin", login_path("admin"), method: :get, class:"btn btn-danger btn-lg my-2" %> 
+   <div style="width:50%;height:100%;align-items:center;border-left: 1px solid #808080", class="d-flex justify-content-center w-50"><div>Are you admin? Login here ! &nbsp;</div><div><%= button_to "Admin", login_path("admin"), method: :get, class:"btn btn-danger btn-lg my-2 border border-dark"%></div>
+   <div class="d-flex justify-content-center">
+        <%= image_tag("admin.svg",size:"300x250") %>
+      </div>
+   </div>
+</div>
+</div>
