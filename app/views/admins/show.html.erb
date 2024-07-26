@@ -32,7 +32,12 @@
 <div>
   <% @c=0 %>
   <% if @houses.length == 0 %>
-  No Houses :(
+  <div class="border border-dark p-5 w-50 h-100 m-auto " style="background-color: rgb(255, 212, 213)">
+    <p class="text-center fs-2">No Houses :(</p>
+    <div class="text-center" >
+      <%= link_to "Add house", new_house_path, class: "btn btn-small btn-dark m-auto" %>
+    </div>
+  </div>
   <% else %>
     <% @houses.each_with_index do |house, index| %>
       <div>
@@ -46,7 +51,11 @@
 <div>
   <% @c=0 %>
   <% if @securities.length == 0 %>
-  No Securities :(
+  <div class="border border-dark p-5 w-50 h-100 m-auto " style="background-color: rgb(255, 212, 213)">
+    <p class="text-center fs-2">No Securities :(</p>
+    <div class="text-center" >
+      <%= link_to "Add Security", add_security_path , class: "btn btn-small btn-dark m-auto"  %> 
+    </div>
   <% else %>
     <% @securities.each_with_index do |security, index| %>
       <div>
